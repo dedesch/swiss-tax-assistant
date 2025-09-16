@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swiss Tax Declaration Assistant</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="auth-section" id="authSection">
+                <span class="user-info" id="userInfo" style="display: none;"></span>
+                <button onclick="showLoginModal()" id="loginBtn">Login</button>
+                <button onclick="showRegisterModal()" id="registerBtn">Register</button>
+                <button onclick="logout()" id="logoutBtn" style="display: none;">Logout</button>
+            </div>
+            <h1>Swiss Tax Declaration Assistant</h1>
+            <p>Navigate Swiss tax complexity with confidence - Canton Aargau specialized</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('overview')">Overview</button>
+            <button class="nav-tab" onclick="showTab('assets')">Assets & Securities</button>
+            <button class="nav-tab" onclick="showTab('properties')">Real Estate</button>
+            <button class="nav-tab" onclick="showTab('debts')">Debts & Interest</button>
+            <button class="nav-tab" onclick="showTab('calculate')">Calculate & Review</button>
+        </div>
+
+        <!-- Content Area - Will be dynamically loaded -->
+        <div class="content" id="mainContent">
+            <!-- Tab content will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div style="margin: 15px 0;">
+                    <label>Email:</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div style="margin: 15px 0;">
+                    <label>Password:</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2>Register</h2>
+            <form id="registerForm">
+                <div style="margin: 15px 0;">
+                    <label>Email:</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div style="margin: 15px 0;">
+                    <label>Password:</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div style="margin: 15px 0;">
+                    <label>Confirm Password:</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/forms.js"></script>
+    <script src="js/calculations.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
