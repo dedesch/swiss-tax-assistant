@@ -1,0 +1,300 @@
+<div id="debts" class="tab-content">
+    <div class="form-section">
+        <h3>Schuldenverzeichnis - Debt Register</h3>
+        <p>Record all debts and liabilities according to Canton Aargau requirements. Interest payments on private debts are tax deductible.</p>
+        
+        <div class="debts-controls">
+            <button class="btn add-debt-btn" onclick="addDebt()">Add Debt</button>
+        </div>
+
+        <!-- Debts List -->
+        <div id="debtsList">
+            <!-- Debts will be dynamically added here -->
+        </div>
+
+        <!-- Debts Summary -->
+        <div class="form-subsection">
+            <h4>Debt Summary</h4>
+            <div class="calculation-summary">
+                <div class="calculation-row">
+                    <span>Mortgage Debts:</span>
+                    <span id="totalMortgageDebts">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Personal Loans:</span>
+                    <span id="totalPersonalLoans">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Credit Card Debts:</span>
+                    <span id="totalCreditCards">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Other Debts:</span>
+                    <span id="totalOtherDebts">0.00 CHF</span>
+                </div>
+                <div class="calculation-row total-row">
+                    <span>Total Debts:</span>
+                    <span id="grandTotalDebts">0.00 CHF</span>
+                </div>
+                <div class="calculation-row interest-row">
+                    <span>Total Interest Paid (Deductible):</span>
+                    <span id="totalInterestPaid">0.00 CHF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Debt Template (hidden) -->
+<div id="debtTemplate" style="display: none;">
+    <div class="debt-item">
+        <div class="debt-header">
+            <span class="debt-title">Debt #<span class="debt-number">1</span></span>
+            <button class="btn-small remove-btn" onclick="removeDebt(this)">Remove</button>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Creditor/Bank Name</label>
+                <input type="text" class="debtCreditor" placeholder="Bank or creditor name">
+            </div>
+            <div>
+                <label>Account/Reference Number</label>
+                <input type="text" class="debtAccountNumber" placeholder="Account or loan reference">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Debt Type</label>
+                <select class="debtType" onchange="updateDebtCalculations(this)">
+                    <option value="mortgage">Mortgage (Real Estate)</option>
+                    <option value="personal">Personal Loan</option>
+                    <option value="credit_card">Credit Card</option>
+                    <option value="business">Business Loan</option>
+                    <option value="other">Other Debt</option>
+                </select>
+            </div>
+            <div>
+                <label>Country/Jurisdiction</label>
+                <select class="debtCountry">
+                    <option value="CH">Switzerland</option>
+                    <option value="DE">Germany</option>
+                    <option value="FR">France</option>
+                    <option value="US">United States</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Outstanding Balance (Dec 31, 2024)</label>
+                <input type="number" class="debtBalance" step="0.01" placeholder="0.00" onchange="updateDebtCalculations(this)">
+            </div>
+            <div>
+                <label>Currency</label>
+                <select class="debtCurrency" onchange="updateDebtCalculations(this)">
+                    <option value="CHF">CHF</option>
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                    <option value="GBP">GBP</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="calculated-field">
+            <label>Balance in CHF</label>
+            <span class="debtBalanceCHF">0.00 CHF</span>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Interest Rate (%)</label>
+                <input type="number" class="debtInterestRate" step="0.01" placeholder="0.00" onchange="updateDebtCalculations(this)">
+            </div>
+            <div>
+                <label>Interest Paid in 2024 (CHF)</label>
+                <input type="number" class="debtInterestPaid" step="0.01" placeholder="0.00" onchange="updateDebtCalculations(this)">
+            </div>
+        </div>
+        
+        <div class="form-group property-link" style="display: none;">
+            <div>
+                <label>Linked Property Address</label>
+                <input type="text" class="linkedPropertyAddress" placeholder="Address of property securing this debt">
+            </div>
+            <div>
+                <label>Property Share Financed (%)</label>
+                <input type="number" class="propertyShare" step="0.01" min="0" max="100" value="100" placeholder="100">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Loan Start Date</label>
+                <input type="date" class="loanStartDate">
+            </div>
+            <div>
+                <label>Expected Payoff Date</label>
+                <input type="date" class="expectedPayoffDate">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.debt-item {
+    margin: 20px 0;
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+}
+
+.debt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.debt-title {
+    font-weight: bold;
+    color: #1e3c72;
+    font-size: 1.1em;
+}
+
+.property-link {
+    background: #fff3cd;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ffeaa7;
+}
+
+.interest-row {
+    background: #e8f4f8;
+    font-weight: bold;
+    color: #1e3c72;
+}
+</style>
+
+<script>
+let debtsCount = 0;
+const exchangeRates = {
+    'EUR': 0.96,
+    'USD': 0.89,
+    'GBP': 1.12,
+    'CHF': 1.0
+};
+
+function addDebt() {
+    debtsCount++;
+    const template = document.getElementById('debtTemplate');
+    const newDebt = template.cloneNode(true);
+    newDebt.id = '';
+    newDebt.style.display = 'block';
+    
+    // Update debt number
+    newDebt.querySelector('.debt-number').textContent = debtsCount;
+    
+    // Add to list
+    document.getElementById('debtsList').appendChild(newDebt);
+    
+    calculateDebtsTotals();
+}
+
+function removeDebt(btn) {
+    btn.closest('.debt-item').remove();
+    calculateDebtsTotals();
+}
+
+function updateDebtCalculations(element) {
+    const debtItem = element.closest('.debt-item');
+    const balance = parseFloat(debtItem.querySelector('.debtBalance').value) || 0;
+    const currency = debtItem.querySelector('.debtCurrency').value;
+    const debtType = debtItem.querySelector('.debtType').value;
+    
+    // Convert to CHF
+    const balanceCHF = balance * (exchangeRates[currency] || 1);
+    debtItem.querySelector('.debtBalanceCHF').textContent = balanceCHF.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    // Show/hide property link section for mortgages
+    const propertyLink = debtItem.querySelector('.property-link');
+    if (debtType === 'mortgage') {
+        propertyLink.style.display = 'flex';
+    } else {
+        propertyLink.style.display = 'none';
+    }
+    
+    calculateDebtsTotals();
+}
+
+function calculateDebtsTotals() {
+    const debts = document.querySelectorAll('.debt-item:not(#debtTemplate)');
+    let totalMortgage = 0;
+    let totalPersonal = 0;
+    let totalCredit = 0;
+    let totalOther = 0;
+    let totalInterest = 0;
+    
+    debts.forEach(debt => {
+        // Get balance in CHF
+        const balanceText = debt.querySelector('.debtBalanceCHF').textContent;
+        const balance = parseFloat(balanceText.replace(/[^\d.-]/g, '')) || 0;
+        
+        // Get debt type
+        const debtType = debt.querySelector('.debtType').value;
+        
+        // Get interest paid
+        const interestPaid = parseFloat(debt.querySelector('.debtInterestPaid').value) || 0;
+        totalInterest += interestPaid;
+        
+        // Categorize debt
+        switch(debtType) {
+            case 'mortgage':
+                totalMortgage += balance;
+                break;
+            case 'personal':
+                totalPersonal += balance;
+                break;
+            case 'credit_card':
+                totalCredit += balance;
+                break;
+            case 'business':
+            case 'other':
+                totalOther += balance;
+                break;
+        }
+    });
+    
+    const grandTotal = totalMortgage + totalPersonal + totalCredit + totalOther;
+    
+    // Update totals
+    document.getElementById('totalMortgageDebts').textContent = totalMortgage.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalPersonalLoans').textContent = totalPersonal.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalCreditCards').textContent = totalCredit.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalOtherDebts').textContent = totalOther.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('grandTotalDebts').textContent = grandTotal.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalInterestPaid').textContent = totalInterest.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    return {
+        totalMortgage,
+        totalPersonal,
+        totalCredit,
+        totalOther,
+        totalInterest,
+        grandTotal
+    };
+}
+
+// Initialize with one debt for demonstration
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('debts')) {
+        addDebt();
+    }
+});
+</script>
+</div>

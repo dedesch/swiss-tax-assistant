@@ -1,0 +1,267 @@
+<div id="main-declaration" class="tab-content">
+    <div class="form-section">
+        <h3>Steuererklärung - Main Tax Declaration</h3>
+        <p>Personal information and primary tax data according to Canton Aargau requirements.</p>
+        
+        <!-- Personal Information -->
+        <div class="form-subsection">
+            <h4>Personal Information</h4>
+            <div class="form-group">
+                <div>
+                    <label>Filing Status</label>
+                    <select id="filingStatus" onchange="updateFilingStatus()">
+                        <option value="single">Single</option>
+                        <option value="married">Married Filing Jointly</option>
+                        <option value="divorced">Divorced</option>
+                        <option value="widowed">Widowed</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Tax Year</label>
+                    <input type="number" id="taxYear" value="2024" min="2020" max="2030" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>First Name</label>
+                    <input type="text" id="firstName" placeholder="First name">
+                </div>
+                <div>
+                    <label>Last Name</label>
+                    <input type="text" id="lastName" placeholder="Last name">
+                </div>
+            </div>
+            <div class="form-group" id="spouseSection" style="display: none;">
+                <div>
+                    <label>Spouse First Name</label>
+                    <input type="text" id="spouseFirstName" placeholder="Spouse first name">
+                </div>
+                <div>
+                    <label>Spouse Last Name</label>
+                    <input type="text" id="spouseLastName" placeholder="Spouse last name">
+                </div>
+            </div>
+        </div>
+
+        <!-- Income Section -->
+        <div class="form-subsection">
+            <h4>Income (Einkommen)</h4>
+            <div class="form-group">
+                <div>
+                    <label>Employment Income (CHF)</label>
+                    <input type="number" id="employmentIncome" step="0.01" placeholder="0.00" onchange="calculateTotals()">
+                </div>
+                <div>
+                    <label>Self-Employment Income (CHF)</label>
+                    <input type="number" id="selfEmploymentIncome" step="0.01" placeholder="0.00" onchange="calculateTotals()">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Rental Income (CHF)</label>
+                    <input type="number" id="rentalIncome" step="0.01" placeholder="0.00" onchange="calculateTotals()">
+                </div>
+                <div>
+                    <label>Investment Income (CHF)</label>
+                    <input type="number" id="investmentIncome" step="0.01" placeholder="0.00" onchange="calculateTotals()">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Other Income (CHF)</label>
+                    <input type="number" id="otherIncome" step="0.01" placeholder="0.00" onchange="calculateTotals()">
+                </div>
+                <div class="calculated-field">
+                    <label>Total Income</label>
+                    <span id="totalIncome">0.00 CHF</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deductions Section -->
+        <div class="form-subsection">
+            <h4>Deductions (Abzüge)</h4>
+            <div class="form-group">
+                <div>
+                    <label>Insurance Premiums (CHF)</label>
+                    <input type="number" id="insurancePremiums" step="0.01" placeholder="0.00" onchange="validateInsuranceDeduction()">
+                    <small id="insuranceLimit" class="form-note">Max: CHF 3,400 (single) / CHF 6,800 (joint)</small>
+                </div>
+                <div>
+                    <label>Medical Expenses (CHF)</label>
+                    <input type="number" id="medicalExpenses" step="0.01" placeholder="0.00" onchange="calculateTotals()">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Charitable Donations (CHF)</label>
+                    <input type="number" id="charitableDonations" step="0.01" placeholder="0.00" onchange="calculateTotals()">
+                </div>
+                <div>
+                    <label>Interest on Private Debts (CHF)</label>
+                    <input type="number" id="privateDebtInterest" step="0.01" placeholder="0.00" onchange="calculateTotals()">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Children (under 18)</label>
+                    <input type="number" id="childrenUnder18" min="0" step="1" placeholder="0" onchange="calculateTotals()">
+                </div>
+                <div class="calculated-field">
+                    <label>Total Deductions</label>
+                    <span id="totalDeductions">0.00 CHF</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tax Calculation Summary -->
+        <div class="form-subsection">
+            <h4>Tax Calculation Summary</h4>
+            <div class="calculation-summary">
+                <div class="calculation-row">
+                    <span>Total Income:</span>
+                    <span id="summaryTotalIncome">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Total Deductions:</span>
+                    <span id="summaryTotalDeductions">0.00 CHF</span>
+                </div>
+                <div class="calculation-row taxable-income">
+                    <span>Taxable Income:</span>
+                    <span id="taxableIncome">0.00 CHF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-subsection {
+    margin: 25px 0;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.form-subsection h4 {
+    color: #1e3c72;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #1e3c72;
+    padding-bottom: 5px;
+}
+
+.calculated-field {
+    padding: 10px;
+    background: #e8f4f8;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.calculated-field label {
+    color: #1e3c72;
+}
+
+.calculation-summary {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid #1e3c72;
+}
+
+.calculation-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    padding: 5px 0;
+}
+
+.calculation-row.taxable-income {
+    border-top: 2px solid #1e3c72;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #1e3c72;
+}
+
+.form-note {
+    display: block;
+    color: #666;
+    font-style: italic;
+    margin-top: 2px;
+}
+</style>
+
+<script>
+function updateFilingStatus() {
+    const filingStatus = document.getElementById('filingStatus').value;
+    const spouseSection = document.getElementById('spouseSection');
+    const insuranceLimit = document.getElementById('insuranceLimit');
+    
+    if (filingStatus === 'married') {
+        spouseSection.style.display = 'flex';
+        insuranceLimit.textContent = 'Max: CHF 6,800 (joint filing)';
+    } else {
+        spouseSection.style.display = 'none';
+        insuranceLimit.textContent = 'Max: CHF 3,400 (single filing)';
+    }
+    
+    validateInsuranceDeduction();
+}
+
+function validateInsuranceDeduction() {
+    const filingStatus = document.getElementById('filingStatus').value;
+    const insurancePremiums = parseFloat(document.getElementById('insurancePremiums').value) || 0;
+    const maxAllowed = filingStatus === 'married' ? 6800 : 3400;
+    
+    if (insurancePremiums > maxAllowed) {
+        document.getElementById('insurancePremiums').style.borderColor = '#ff4444';
+        alert(`Insurance premium deduction cannot exceed CHF ${maxAllowed.toLocaleString()} for ${filingStatus} filing status.`);
+        document.getElementById('insurancePremiums').value = maxAllowed;
+    } else {
+        document.getElementById('insurancePremiums').style.borderColor = '';
+    }
+    
+    calculateTotals();
+}
+
+function calculateMainDeclarationTotals() {
+    // Calculate total income
+    const employmentIncome = parseFloat(document.getElementById('employmentIncome').value) || 0;
+    const selfEmploymentIncome = parseFloat(document.getElementById('selfEmploymentIncome').value) || 0;
+    const rentalIncome = parseFloat(document.getElementById('rentalIncome').value) || 0;
+    const investmentIncome = parseFloat(document.getElementById('investmentIncome').value) || 0;
+    const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+    
+    const totalIncome = employmentIncome + selfEmploymentIncome + rentalIncome + investmentIncome + otherIncome;
+    
+    // Calculate total deductions
+    const filingStatus = document.getElementById('filingStatus').value;
+    const maxInsurance = filingStatus === 'married' ? 6800 : 3400;
+    const insurancePremiums = Math.min(parseFloat(document.getElementById('insurancePremiums').value) || 0, maxInsurance);
+    const medicalExpenses = parseFloat(document.getElementById('medicalExpenses').value) || 0;
+    const charitableDonations = parseFloat(document.getElementById('charitableDonations').value) || 0;
+    const privateDebtInterest = parseFloat(document.getElementById('privateDebtInterest').value) || 0;
+    const childrenUnder18 = parseFloat(document.getElementById('childrenUnder18').value) || 0;
+    
+    // Child deduction (typical rate: CHF 6,400 per child)
+    const childDeduction = childrenUnder18 * 6400;
+    
+    const totalDeductions = insurancePremiums + medicalExpenses + charitableDonations + privateDebtInterest + childDeduction;
+    
+    // Calculate taxable income
+    const taxableIncome = Math.max(0, totalIncome - totalDeductions);
+    
+    // Update display
+    document.getElementById('totalIncome').textContent = totalIncome.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalDeductions').textContent = totalDeductions.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('summaryTotalIncome').textContent = totalIncome.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('summaryTotalDeductions').textContent = totalDeductions.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('taxableIncome').textContent = taxableIncome.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    return {
+        totalIncome,
+        totalDeductions,
+        taxableIncome
+    };
+}
+</script>

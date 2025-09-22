@@ -1,88 +1,904 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swiss Tax Declaration Assistant</title>
-    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Meta Tags (French default) -->
+    <title data-translate="meta.title">Votre déclaration d'impôts en Suisse, en quelques minutes - TaxPilot</title>
+    <meta name="description" data-translate="meta.description" content="Assistant IA pour votre déclaration fiscale suisse. Guidage adapté à votre canton, vérifications pour éviter les erreurs coûteuses. Économisez jusqu'à 75% vs experts.">
+    <link rel="canonical" href="https://taxpilot.ch">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D00000'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" data-translate="meta.title" content="Votre déclaration d'impôts en Suisse, en quelques minutes - TaxPilot">
+    <meta property="og:description" data-translate="meta.description" content="Assistant IA pour votre déclaration fiscale suisse. Guidage adapté à votre canton, vérifications pour éviter les erreurs coûteuses.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://taxpilot.ch">
+    <meta property="og:image" content="https://taxpilot.ch/og-image.png">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" data-translate="meta.title" content="Votre déclaration d'impôts en Suisse, en quelques minutes - TaxPilot">
+    <meta name="twitter:description" data-translate="meta.description" content="Assistant IA pour votre déclaration fiscale suisse. Guidage adapté à votre canton, vérifications pour éviter les erreurs coûteuses.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'swiss-red': '#D00000',
+                        'alpine-blue': '#1E3A8A',
+                        'neutral-grey': '#6B7280',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "TaxPilot",
+        "url": "https://taxpilot.ch",
+        "logo": "https://taxpilot.ch/logo.svg",
+        "description": "AI-assisted Swiss tax declaration service",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "CH"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Service",
+            "email": "support@taxpilot.ch"
+        }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "TaxPilot Swiss Tax Assistant",
+        "description": "AI-powered Swiss tax declaration service",
+        "brand": {
+            "@type": "Brand",
+            "name": "TaxPilot"
+        },
+        "offers": [
+            {
+                "@type": "Offer",
+                "name": "Starter",
+                "price": "39",
+                "priceCurrency": "CHF"
+            },
+            {
+                "@type": "Offer", 
+                "name": "Plus",
+                "price": "79",
+                "priceCurrency": "CHF"
+            },
+            {
+                "@type": "Offer",
+                "name": "Pro", 
+                "price": "149",
+                "priceCurrency": "CHF"
+            }
+        ]
+    }
+    </script>
 </head>
-<body>
-    <div class="container">
-        <!-- Header Section -->
-        <div class="header">
-            <div class="auth-section" id="authSection">
-                <span class="user-info" id="userInfo" style="display: none;"></span>
-                <button onclick="showLoginModal()" id="loginBtn">Login</button>
-                <button onclick="showRegisterModal()" id="registerBtn">Register</button>
-                <button onclick="logout()" id="logoutBtn" style="display: none;">Logout</button>
+<body class="font-sans bg-white text-gray-900 leading-relaxed">
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 z-50 transform translate-y-full transition-transform duration-300">
+        <div class="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-sm" data-translate="cookies.message">
+                Nous utilisons des cookies pour améliorer votre expérience. En continuant, vous acceptez notre utilisation des cookies.
+            </p>
+            <div class="flex gap-2">
+                <button id="accept-cookies" class="bg-swiss-red hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors" data-translate="cookies.accept">
+                    Accepter tout
+                </button>
+                <button id="manage-cookies" class="border border-gray-400 hover:border-white text-white px-4 py-2 rounded text-sm font-medium transition-colors" data-translate="cookies.manage">
+                    Gérer
+                </button>
             </div>
-            <h1>Swiss Tax Declaration Assistant</h1>
-            <p>Navigate Swiss tax complexity with confidence - Canton Aargau specialized</p>
-        </div>
-
-        <!-- Navigation Tabs -->
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="showTab('overview')">Overview</button>
-            <button class="nav-tab" onclick="showTab('assets')">Assets & Securities</button>
-            <button class="nav-tab" onclick="showTab('properties')">Real Estate</button>
-            <button class="nav-tab" onclick="showTab('debts')">Debts & Interest</button>
-            <button class="nav-tab" onclick="showTab('calculate')">Calculate & Review</button>
-        </div>
-
-        <!-- Content Area - Will be dynamically loaded -->
-        <div class="content" id="mainContent">
-            <!-- Tab content will be loaded here -->
         </div>
     </div>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('loginModal')">&times;</span>
-            <h2>Login</h2>
-            <form id="loginForm">
-                <div style="margin: 15px 0;">
-                    <label>Email:</label>
-                    <input type="email" id="loginEmail" required>
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <svg class="w-8 h-8 text-swiss-red" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-xl font-bold text-gray-900">TaxPilot</span>
+            </div>
+            
+            <!-- Language Switcher -->
+            <div class="relative">
+                <select id="language-switcher" class="appearance-none bg-white border border-gray-300 rounded px-3 py-2 pr-8 text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="de">🇩🇪 DE</option>
+                    <option value="it">🇮🇹 IT</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
                 </div>
-                <div style="margin: 15px 0;">
-                    <label>Password:</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn" style="width: 100%;">Login</button>
-            </form>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Register Modal -->
-    <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('registerModal')">&times;</span>
-            <h2>Register</h2>
-            <form id="registerForm">
-                <div style="margin: 15px 0;">
-                    <label>Email:</label>
-                    <input type="email" id="registerEmail" required>
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-alpine-blue to-blue-800 text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight" data-translate="hero.headline">
+                    Votre déclaration d'impôts en Suisse, en quelques minutes
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-blue-100" data-translate="hero.subheadline">
+                    Guidage assisté par IA adapté à votre canton, avec vérifications pour éviter les erreurs coûteuses.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                    <button id="cta-primary" class="bg-swiss-red hover:bg-red-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50" data-translate="hero.cta.primary">
+                        Commencer gratuitement
+                    </button>
+                    <button id="cta-secondary" class="border-2 border-white text-white hover:bg-white hover:text-alpine-blue px-8 py-4 rounded-lg text-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50" data-translate="hero.cta.secondary">
+                        Voir comment ça marche
+                    </button>
                 </div>
-                <div style="margin: 15px 0;">
-                    <label>Password:</label>
-                    <input type="password" id="registerPassword" required>
+                
+                <!-- Trust Badges -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-blue-100">
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/>
+                        </svg>
+                        <span data-translate="hero.trust.encrypted">Données cryptées</span>
+                    </div>
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                        </svg>
+                        <span data-translate="hero.trust.cantons">Tous cantons</span>
+                    </div>
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                        <span data-translate="hero.trust.gdpr">Conforme RGPD</span>
+                    </div>
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 2L3 7v3c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-7-5z"/>
+                        </svg>
+                        <span data-translate="hero.trust.fees">Pas de frais cachés</span>
+                    </div>
                 </div>
-                <div style="margin: 15px 0;">
-                    <label>Confirm Password:</label>
-                    <input type="password" id="confirmPassword" required>
-                </div>
-                <button type="submit" class="btn" style="width: 100%;">Register</button>
-            </form>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <!-- JavaScript Files -->
-    <script src="js/api-client.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/modals.js"></script>
-    <script src="js/forms.js"></script>
-    <script src="js/calculations.js"></script>
-    <script src="js/main.js"></script>
+    <!-- Social Proof -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <!-- Testimonials -->
+            <div class="max-w-4xl mx-auto text-center mb-16">
+                <h2 class="text-3xl font-bold mb-8" data-translate="testimonials.title">Ce que disent nos clients</h2>
+                <div id="testimonial-slider" class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                    <div class="testimonial-item">
+                        <p class="text-lg text-gray-700 mb-4" data-translate="testimonials.0.quote">
+                            "J'ai économisé 400 CHF et 6 heures de travail. L'interface est intuitive et les vérifications m'ont évité des erreurs."
+                        </p>
+                        <div class="flex items-center justify-center">
+                            <div class="text-center">
+                                <p class="font-semibold" data-translate="testimonials.0.name">Marie Dubois</p>
+                                <p class="text-gray-500" data-translate="testimonials.0.location">Canton VD</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial indicators -->
+                <div class="flex justify-center space-x-2">
+                    <button class="w-3 h-3 rounded-full bg-swiss-red testimonial-indicator active" data-slide="0"></button>
+                    <button class="w-3 h-3 rounded-full bg-gray-300 testimonial-indicator" data-slide="1"></button>
+                    <button class="w-3 h-3 rounded-full bg-gray-300 testimonial-indicator" data-slide="2"></button>
+                </div>
+            </div>
+            
+            <!-- As seen in -->
+            <div class="text-center">
+                <p class="text-gray-500 mb-6" data-translate="press.title">Vu dans</p>
+                <div class="flex justify-center items-center space-x-8 opacity-50 grayscale">
+                    <div class="bg-gray-300 w-24 h-12 rounded flex items-center justify-center text-xs text-gray-600">Logo 1</div>
+                    <div class="bg-gray-300 w-24 h-12 rounded flex items-center justify-center text-xs text-gray-600">Logo 2</div>
+                    <div class="bg-gray-300 w-24 h-12 rounded flex items-center justify-center text-xs text-gray-600">Logo 3</div>
+                    <div class="bg-gray-300 w-24 h-12 rounded flex items-center justify-center text-xs text-gray-600">Logo 4</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4" data-translate="how.title">Comment ça marche</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto" data-translate="how.subtitle">
+                    Quatre étapes simples pour une déclaration fiscale sans stress
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+                <div class="text-center group">
+                    <div class="bg-alpine-blue text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4" data-translate="how.step1.title">Répondez aux questions</h3>
+                    <p class="text-gray-600" data-translate="how.step1.description">Questions adaptées à votre canton et situation familiale</p>
+                </div>
+                
+                <div class="text-center group">
+                    <div class="bg-alpine-blue text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4" data-translate="how.step2.title">Vérification automatique</h3>
+                    <p class="text-gray-600" data-translate="how.step2.description">Préremplissage des déductions et détection des avantages manqués</p>
+                </div>
+                
+                <div class="text-center group">
+                    <div class="bg-alpine-blue text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4" data-translate="how.step3.title">Génération des formulaires</h3>
+                    <p class="text-gray-600" data-translate="how.step3.description">Formulaires officiels prêts à soumettre</p>
+                </div>
+                
+                <div class="text-center group">
+                    <div class="bg-alpine-blue text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4" data-translate="how.step4.title">Révision humaine</h3>
+                    <p class="text-gray-600" data-translate="how.step4.description">Option de révision par un expert fiscal (supplément payant)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Tour -->
+    <section id="product-tour" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4" data-translate="features.title">Fonctionnalités principales</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto" data-translate="features.subtitle">
+                    Des outils puissants pour simplifier votre déclaration fiscale
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="bg-gray-200 h-48 flex items-center justify-center">
+                        <span class="text-gray-500" data-translate="features.questionnaire.screenshot">Capture d'écran du questionnaire</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-4" data-translate="features.questionnaire.title">Questionnaire intelligent</h3>
+                        <p class="text-gray-600" data-translate="features.questionnaire.description">Questions adaptées selon votre canton et situation familiale</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="bg-gray-200 h-48 flex items-center justify-center">
+                        <span class="text-gray-500" data-translate="features.deductions.screenshot">Capture d'écran du vérificateur</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-4" data-translate="features.deductions.title">Vérificateur de déductions</h3>
+                        <p class="text-gray-600" data-translate="features.deductions.description">Logement, enfants, 2e pilier, trajets domicile-travail, etc.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="bg-gray-200 h-48 flex items-center justify-center">
+                        <span class="text-gray-500" data-translate="features.compliance.screenshot">Capture d'écran des vérifications</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-4" data-translate="features.compliance.title">Vérifications de conformité</h3>
+                        <p class="text-gray-600" data-translate="features.compliance.description">Évitez les erreurs courantes et les problèmes de conformité</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Expandable Expat Section -->
+            <div class="max-w-4xl mx-auto">
+                <button id="expat-toggle" class="w-full bg-white rounded-lg shadow-lg p-6 text-left hover:shadow-xl transition-shadow focus:outline-none focus:ring-4 focus:ring-alpine-blue focus:ring-opacity-50">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2" data-translate="features.expat.title">Mode Expat & Scénarios transfrontaliers</h3>
+                            <p class="text-gray-600" data-translate="features.expat.subtitle">Solutions spécialisées pour les résidents étrangers et travailleurs frontaliers</p>
+                        </div>
+                        <svg id="expat-icon" class="w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                </button>
+                <div id="expat-content" class="hidden bg-white rounded-b-lg shadow-lg p-6 mt-2">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold mb-2" data-translate="features.expat.residents.title">Résidents étrangers</h4>
+                            <ul class="text-gray-600 space-y-1">
+                                <li data-translate="features.expat.residents.item1">• Statut de quasi-résident</li>
+                                <li data-translate="features.expat.residents.item2">• Déductions spéciales</li>
+                                <li data-translate="features.expat.residents.item3">• Impôt à la source</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2" data-translate="features.expat.crossborder.title">Travailleurs frontaliers</h4>
+                            <ul class="text-gray-600 space-y-1">
+                                <li data-translate="features.expat.crossborder.item1">• Accords de double imposition</li>
+                                <li data-translate="features.expat.crossborder.item2">• Remboursement d'impôt à la source</li>
+                                <li data-translate="features.expat.crossborder.item3">• Optimisation fiscale</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4" data-translate="pricing.title">Tarifs transparents</h2>
+                <p class="text-xl text-gray-600 mb-6" data-translate="pricing.subtitle">
+                    Choisissez le plan qui correspond à vos besoins
+                </p>
+                <p class="text-lg text-swiss-red font-semibold" data-translate="pricing.comparison">
+                    Expert fiscal typique = CHF 150–600+ par déclaration. Économisez jusqu'à 75%.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+                <!-- Starter Plan -->
+                <div class="bg-white border-2 border-gray-200 rounded-lg p-8 relative hover:shadow-lg transition-shadow">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold mb-4" data-translate="pricing.starter.name">Starter</h3>
+                        <div class="mb-6">
+                            <span class="text-4xl font-bold">CHF 39</span>
+                            <span class="text-gray-600" data-translate="pricing.per.filing">/ déclaration</span>
+                        </div>
+                        <ul class="text-left space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.starter.feature1">1 déclaration fiscale</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.starter.feature2">Guidage assisté par IA</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.starter.feature3">Export PDF</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.starter.feature4">Support email</span>
+                            </li>
+                        </ul>
+                        <button class="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50" data-translate="pricing.starter.cta">
+                            Choisir Starter
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Plus Plan (Popular) -->
+                <div class="bg-white border-2 border-swiss-red rounded-lg p-8 relative hover:shadow-lg transition-shadow">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <span class="bg-swiss-red text-white px-4 py-1 rounded-full text-sm font-semibold" data-translate="pricing.popular">
+                            Populaire
+                        </span>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold mb-4" data-translate="pricing.plus.name">Plus</h3>
+                        <div class="mb-6">
+                            <span class="text-4xl font-bold">CHF 79</span>
+                            <span class="text-gray-600" data-translate="pricing.per.filing">/ déclaration</span>
+                        </div>
+                        <ul class="text-left space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.plus.feature1">Tout du plan Starter</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.plus.feature2">Vérificateur de déductions</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.plus.feature3">Chat en direct</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.plus.feature4">Historique des déclarations</span>
+                            </li>
+                        </ul>
+                        <button class="w-full bg-swiss-red hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50" data-translate="pricing.plus.cta">
+                            Choisir Plus
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Pro Plan -->
+                <div class="bg-white border-2 border-gray-200 rounded-lg p-8 relative hover:shadow-lg transition-shadow">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold mb-4" data-translate="pricing.pro.name">Pro</h3>
+                        <div class="mb-6">
+                            <span class="text-4xl font-bold">CHF 149</span>
+                            <span class="text-gray-600" data-translate="pricing.per.filing">/ déclaration</span>
+                        </div>
+                        <ul class="text-left space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.pro.feature1">Tout du plan Plus</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.pro.feature2">Révision humaine optionnelle</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.pro.feature3">SLA 24-48h</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                                </svg>
+                                <span data-translate="pricing.pro.feature4">Support prioritaire</span>
+                            </li>
+                        </ul>
+                        <button class="w-full bg-gray-900 hover:bg-black text-white py-3 px-6 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50" data-translate="pricing.pro.cta">
+                            Choisir Pro
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ROI Calculator -->
+            <div class="max-w-2xl mx-auto bg-gray-50 rounded-lg p-8">
+                <h3 class="text-2xl font-bold text-center mb-6" data-translate="roi.title">Calculateur d'économies</h3>
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="roi.cost.label">
+                            Combien avez-vous payé l'année dernière? (CHF)
+                        </label>
+                        <input id="last-year-cost" type="number" placeholder="300" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="roi.time.label">
+                            Temps passé (heures)
+                        </label>
+                        <input id="time-spent" type="number" placeholder="8" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
+                    </div>
+                </div>
+                <div id="roi-result" class="text-center p-6 bg-white rounded-lg border-2 border-swiss-red">
+                    <p class="text-lg mb-2" data-translate="roi.savings">Économies estimées vs TaxPilot Plus:</p>
+                    <p class="text-3xl font-bold text-swiss-red" id="savings-amount">CHF 221</p>
+                    <p class="text-gray-600" id="time-savings" data-translate="roi.time.saved">et 6+ heures économisées</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4" data-translate="comparison.title">TaxPilot vs Expert fiscal</h2>
+                <p class="text-xl text-gray-600" data-translate="comparison.subtitle">
+                    Voir où nous excellons et quand consulter un expert
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto overflow-x-auto">
+                <table class="w-full bg-white rounded-lg shadow-lg overflow-hidden">
+                    <thead class="bg-alpine-blue text-white">
+                        <tr>
+                            <th class="px-6 py-4 text-left" data-translate="comparison.criteria">Critères</th>
+                            <th class="px-6 py-4 text-center">TaxPilot</th>
+                            <th class="px-6 py-4 text-center" data-translate="comparison.expert">Expert fiscal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 font-medium" data-translate="comparison.price">Prix par déclaration</td>
+                            <td class="px-6 py-4 text-center text-green-600 font-semibold">CHF 39–149</td>
+                            <td class="px-6 py-4 text-center text-red-600 font-semibold">CHF 150–600+</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4 font-medium" data-translate="comparison.turnaround">Délai</td>
+                            <td class="px-6 py-4 text-center text-green-600 font-semibold" data-translate="comparison.minutes">Quelques minutes</td>
+                            <td class="px-6 py-4 text-center text-red-600 font-semibold" data-translate="comparison.weeks">1-3 semaines</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-medium" data-translate="comparison.canton">Guidage cantonal</td>
+                            <td class="px-6 py-4 text-center text-green-600">✓</td>
+                            <td class="px-6 py-4 text-center text-green-600">✓</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4 font-medium" data-translate="comparison.deductions">Vérifications déductions</td>
+                            <td class="px-6 py-4 text-center text-green-600">✓</td>
+                            <td class="px-6 py-4 text-center text-green-600">✓</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-medium" data-translate="comparison.privacy">Confidentialité données</td>
+                            <td class="px-6 py-4 text-center text-green-600" data-translate="comparison.encrypted">Crypté</td>
+                            <td class="px-6 py-4 text-center text-yellow-600" data-translate="comparison.varies">Variable</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4 font-medium" data-translate="comparison.availability">Disponibilité</td>
+                            <td class="px-6 py-4 text-center text-green-600">24/7</td>
+                            <td class="px-6 py-4 text-center text-yellow-600" data-translate="comparison.limited">Limitée</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-medium" data-translate="comparison.complex">Cas complexes</td>
+                            <td class="px-6 py-4 text-center text-yellow-600" data-translate="comparison.basic">Basique</td>
+                            <td class="px-6 py-4 text-center text-green-600" data-translate="comparison.excellent">Excellent</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lead Capture -->
+    <section id="signup" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4" data-translate="signup.title">Commencez votre déclaration aujourd'hui</h2>
+                <p class="text-xl text-gray-600 mb-8" data-translate="signup.subtitle">
+                    Rejoignez des milliers de contribuables suisses qui économisent temps et argent
+                </p>
+                
+                <form id="signup-form" class="space-y-4 mb-6">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <input id="email-input" type="email" placeholder="votre@email.com" required 
+                               class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
+                        <select id="canton-select" required 
+                                class="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
+                            <option value="" data-translate="signup.canton.placeholder">Choisissez votre canton</option>
+                            <option value="AG">Argovie (AG)</option>
+                            <option value="AI">Appenzell Rhodes-Intérieures (AI)</option>
+                            <option value="AR">Appenzell Rhodes-Extérieures (AR)</option>
+                            <option value="BE">Berne (BE)</option>
+                            <option value="BL">Bâle-Campagne (BL)</option>
+                            <option value="BS">Bâle-Ville (BS)</option>
+                            <option value="FR">Fribourg (FR)</option>
+                            <option value="GE">Genève (GE)</option>
+                            <option value="GL">Glaris (GL)</option>
+                            <option value="GR">Grisons (GR)</option>
+                            <option value="JU">Jura (JU)</option>
+                            <option value="LU">Lucerne (LU)</option>
+                            <option value="NE">Neuchâtel (NE)</option>
+                            <option value="NW">Nidwald (NW)</option>
+                            <option value="OW">Obwald (OW)</option>
+                            <option value="SG">Saint-Gall (SG)</option>
+                            <option value="SH">Schaffhouse (SH)</option>
+                            <option value="SO">Soleure (SO)</option>
+                            <option value="SZ">Schwyz (SZ)</option>
+                            <option value="TG">Thurgovie (TG)</option>
+                            <option value="TI">Tessin (TI)</option>
+                            <option value="UR">Uri (UR)</option>
+                            <option value="VD">Vaud (VD)</option>
+                            <option value="VS">Valais (VS)</option>
+                            <option value="ZG">Zoug (ZG)</option>
+                            <option value="ZH">Zurich (ZH)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-swiss-red hover:bg-red-700 text-white py-3 px-6 rounded-lg text-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50" data-translate="signup.cta">
+                        Commencer gratuitement
+                    </button>
+                </form>
+                
+                <div class="mb-6">
+                    <label class="flex items-center justify-center space-x-2 text-sm text-gray-600">
+                        <input id="gdpr-checkbox" type="checkbox" required class="w-4 h-4 text-swiss-red bg-gray-100 border-gray-300 rounded focus:ring-swiss-red">
+                        <span data-translate="signup.gdpr">
+                            J'accepte la <a href="#" class="text-swiss-red hover:underline">Politique de confidentialité</a> et les <a href="#" class="text-swiss-red hover:underline">Conditions d'utilisation</a>
+                        </span>
+                    </label>
+                </div>
+                
+                <div id="signup-success" class="hidden bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
+                    <p data-translate="signup.success">Merci! Nous vous avons envoyé un email pour commencer.</p>
+                </div>
+                
+                <p class="text-center text-gray-500 mb-6" data-translate="signup.demo">Ou</p>
+                
+                <button id="demo-button" class="border-2 border-gray-300 hover:border-swiss-red text-gray-700 hover:text-swiss-red py-3 px-6 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-swiss-red focus:ring-opacity-50" data-translate="signup.book.demo">
+                    📅 Réserver une démo de 15 minutes
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4" data-translate="faq.title">Questions fréquentes</h2>
+                <p class="text-xl text-gray-600" data-translate="faq.subtitle">
+                    Tout ce que vous devez savoir sur TaxPilot
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto space-y-4">
+                <div class="faq-item">
+                    <button class="faq-question w-full bg-white rounded-lg p-6 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-4 focus:ring-alpine-blue focus:ring-opacity-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold" data-translate="faq.0.question">Est-ce valide pour mon canton?</h3>
+                            <svg class="faq-icon w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer hidden bg-white rounded-b-lg px-6 pb-6">
+                        <p class="text-gray-600" data-translate="faq.0.answer">
+                            Oui, TaxPilot fonctionne pour tous les 26 cantons suisses. Notre système adapte automatiquement les questions et calculs selon les spécificités de votre canton.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question w-full bg-white rounded-lg p-6 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-4 focus:ring-alpine-blue focus:ring-opacity-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold" data-translate="faq.1.question">Puis-je importer les données de l'année dernière?</h3>
+                            <svg class="faq-icon w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer hidden bg-white rounded-b-lg px-6 pb-6">
+                        <p class="text-gray-600" data-translate="faq.1.answer">
+                            Oui, vous pouvez importer vos données fiscales de l'année précédente pour accélérer le processus. TaxPilot supporte les formats PDF et les données saisies manuellement.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question w-full bg-white rounded-lg p-6 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-4 focus:ring-alpine-blue focus:ring-opacity-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold" data-translate="faq.2.question">Comment gérez-vous les personnes à charge/enfants?</h3>
+                            <svg class="faq-icon w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer hidden bg-white rounded-b-lg px-6 pb-6">
+                        <p class="text-gray-600" data-translate="faq.2.answer">
+                            TaxPilot gère automatiquement les déductions pour enfants, personnes à charge, frais de garde et d'éducation selon votre situation familiale et les règles de votre canton.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question w-full bg-white rounded-lg p-6 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-4 focus:ring-alpine-blue focus:ring-opacity-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold" data-translate="faq.3.question">Mes données sont-elles sécurisées et privées?</h3>
+                            <svg class="faq-icon w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer hidden bg-white rounded-b-lg px-6 pb-6">
+                        <p class="text-gray-600" data-translate="faq.3.answer">
+                            Absolument. Nous utilisons un cryptage de niveau bancaire (AES-256), hébergement en Suisse, conformité RGPD complète, et nous ne vendons jamais vos données à des tiers.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question w-full bg-white rounded-lg p-6 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-4 focus:ring-alpine-blue focus:ring-opacity-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold" data-translate="faq.4.question">Puis-je encore parler à un humain?</h3>
+                            <svg class="faq-icon w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer hidden bg-white rounded-b-lg px-6 pb-6">
+                        <p class="text-gray-600" data-translate="faq.4.answer">
+                            Oui! Le plan Pro inclut une révision humaine optionnelle par un expert fiscal certifié, et tous les plans offrent un support par chat en direct ou email.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question w-full bg-white rounded-lg p-6 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-4 focus:ring-alpine-blue focus:ring-opacity-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold" data-translate="faq.5.question">Politique de remboursement?</h3>
+                            <svg class="faq-icon w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer hidden bg-white rounded-b-lg px-6 pb-6">
+                        <p class="text-gray-600" data-translate="faq.5.answer">
+                            Remboursement intégral sous 30 jours si vous n'êtes pas satisfait, sans questions. Nous voulons que vous soyez entièrement confiant dans votre choix.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question w-full bg-white rounded-lg p-6 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-4 focus:ring-alpine-blue focus:ring-opacity-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold" data-translate="faq.6.question">Quand ai-je besoin d'un expert fiscal à la place?</h3>
+                            <svg class="faq-icon w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer hidden bg-white rounded-b-lg px-6 pb-6">
+                        <p class="text-gray-600" data-translate="faq.6.answer">
+                            Pour des situations très complexes: structures d'entreprises multiples, optimisation fiscale internationale, litiges en cours, ou patrimoines exceptionnels (>5M CHF). Nous recommandons honnêtement quand consulter un expert.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question w-full bg-white rounded-lg p-6 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-4 focus:ring-alpine-blue focus:ring-opacity-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold" data-translate="faq.7.question">Comment soumettre aux autorités?</h3>
+                            <svg class="faq-icon w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer hidden bg-white rounded-b-lg px-6 pb-6">
+                        <p class="text-gray-600" data-translate="faq.7.answer">
+                            TaxPilot génère tous les formulaires officiels prêts à soumettre. Vous pouvez les envoyer par courrier postal ou electroniquement selon les options de votre canton. Nous fournissons des instructions étape par étape.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <svg class="w-8 h-8 text-swiss-red" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-xl font-bold">TaxPilot</span>
+                    </div>
+                    <p class="text-gray-400 mb-4" data-translate="footer.description">
+                        Assistant IA pour votre déclaration fiscale suisse. Simple, sécurisé, et conforme.
+                    </p>
+                    <div class="text-gray-400">
+                        <p>TaxPilot SA</p>
+                        <p>Rue de l'Innovation 42</p>
+                        <p>1000 Lausanne, Suisse</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4" data-translate="footer.product">Produit</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#pricing" class="hover:text-white transition-colors" data-translate="footer.pricing">Tarifs</a></li>
+                        <li><a href="#how-it-works" class="hover:text-white transition-colors" data-translate="footer.how">Comment ça marche</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-translate="footer.security">Sécurité</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-translate="footer.integrations">Intégrations</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4" data-translate="footer.support">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors" data-translate="footer.faq">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-translate="footer.contact">Contact</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-translate="footer.guides">Guides</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-translate="footer.status">Statut</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4" data-translate="footer.legal">Légal</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors" data-translate="footer.privacy">Confidentialité</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-translate="footer.terms">Conditions</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-translate="footer.cookies">Cookies</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-translate="footer.imprint">Mentions légales</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
+                <p class="text-gray-400 mb-4 md:mb-0">
+                    © 2024 TaxPilot SA. <span data-translate="footer.rights">Tous droits réservés.</span>
+                </p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <span class="sr-only">Twitter</span>
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <span class="sr-only">LinkedIn</span>
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+    
+    <!-- Analytics Placeholder -->
+    <script>
+        // Placeholder for analytics
+        window.analytics = {
+            track: function(event, properties) {
+                console.log('Analytics Event:', event, properties);
+                // Replace with your analytics implementation
+            }
+        };
+    </script>
 </body>
 </html>

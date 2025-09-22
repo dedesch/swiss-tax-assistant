@@ -1,0 +1,82 @@
+<div id="overview" class="tab-content active">
+    <div class="form-section">
+        <h3>Welcome to Your Swiss Tax Assistant</h3>
+        <p>This tool will help you navigate the Swiss tax declaration process, particularly for complex situations involving:</p>
+        <ul style="margin: 15px 0 15px 30px; line-height: 1.6;">
+            <li>International assets and properties</li>
+            <li>Foreign currency investments</li>
+            <li>Business vs private asset classification</li>
+            <li>Multiple bank accounts and mortgages</li>
+            <li>Stock compensation plans</li>
+        </ul>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        <p style="text-align: center; color: #6c757d;">Progress: <span id="progressText">0%</span></p>
+    </div>
+
+    <div class="form-section">
+        <h3>Personal Information</h3>
+        <div class="form-group">
+            <div>
+                <label>First Name</label>
+                <input type="text" id="firstName" onchange="updateProgress()">
+            </div>
+            <div>
+                <label>Last Name</label>
+                <input type="text" id="lastName" onchange="updateProgress()">
+            </div>
+        </div>
+        <div class="form-group">
+            <div>
+                <label>Address</label>
+                <input type="text" id="address" onchange="updateProgress()">
+            </div>
+            <div>
+                <label>Tax Year</label>
+                <select id="taxYear" onchange="updateProgress()">
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-success" onclick="saveProgress()">💾 Save Progress</button>
+            <button class="btn btn-secondary" onclick="loadProgress()">📂 Load Saved Data</button>
+        </div>
+    </div>
+
+    <div class="info">
+        <strong>Getting Started:</strong> Fill out each section systematically. The tool will automatically classify your assets and debts, handle currency conversions, and generate the appropriate Swiss tax forms. Register to save your progress!
+    </div>
+</div>
+
+<style>
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.info {
+    background: #e8f4f8;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #1e3c72;
+    margin: 20px 0;
+    line-height: 1.6;
+}
+</style>

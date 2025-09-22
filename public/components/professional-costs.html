@@ -1,0 +1,281 @@
+<div id="professional-costs" class="tab-content">
+    <div class="form-section">
+        <h3>Berufskosten - Professional/Work-Related Costs</h3>
+        <p>Work-related deductions according to Canton Aargau rules. Employer reimbursements reduce deductible amounts.</p>
+        
+        <!-- Commuting Costs -->
+        <div class="form-subsection">
+            <h4>Commuting Costs (Fahrtkosten)</h4>
+            <div class="form-group">
+                <div>
+                    <label>Transportation Method</label>
+                    <select id="transportMethod" onchange="updateCommutingCalculations()">
+                        <option value="public">Public Transportation</option>
+                        <option value="private">Private Vehicle</option>
+                        <option value="mixed">Mixed (Public + Private)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Working Days per Year</label>
+                    <input type="number" id="workingDays" min="1" max="365" value="220" onchange="updateCommutingCalculations()">
+                </div>
+            </div>
+            
+            <!-- Public Transportation Section -->
+            <div id="publicTransportSection">
+                <div class="form-group">
+                    <div>
+                        <label>Monthly Public Transport Pass (CHF)</label>
+                        <input type="number" id="monthlyPass" step="0.01" placeholder="0.00" onchange="updateCommutingCalculations()">
+                    </div>
+                    <div>
+                        <label>Employer Transport Contribution (CHF/month)</label>
+                        <input type="number" id="employerTransportContribution" step="0.01" placeholder="0.00" onchange="updateCommutingCalculations()">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Private Vehicle Section -->
+            <div id="privateVehicleSection" style="display: none;">
+                <div class="form-group">
+                    <div>
+                        <label>Distance Home to Work (km one way)</label>
+                        <input type="number" id="commutingDistance" step="0.1" placeholder="0" onchange="updateCommutingCalculations()">
+                    </div>
+                    <div>
+                        <label>Vehicle Expense Rate (CHF/km)</label>
+                        <input type="number" id="vehicleRate" step="0.01" value="0.70" onchange="updateCommutingCalculations()">
+                        <small class="form-note">Standard rate: CHF 0.70/km</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="calculated-field">
+                <label>Annual Commuting Costs (Deductible)</label>
+                <span id="totalCommutingCosts">0.00 CHF</span>
+            </div>
+        </div>
+
+        <!-- Meal Costs -->
+        <div class="form-subsection">
+            <h4>Meal Costs (Verpflegungskosten)</h4>
+            <div class="form-group">
+                <div>
+                    <label>Meals Away from Home (days/year)</label>
+                    <input type="number" id="mealDays" min="0" max="365" placeholder="0" onchange="updateMealCalculations()">
+                </div>
+                <div>
+                    <label>Meal Allowance per Day (CHF)</label>
+                    <input type="number" id="mealRate" step="0.01" value="15.00" onchange="updateMealCalculations()">
+                    <small class="form-note">Standard allowance: CHF 15.00/day</small>
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Employer Meal Contribution (CHF/year)</label>
+                    <input type="number" id="employerMealContribution" step="0.01" placeholder="0.00" onchange="updateMealCalculations()">
+                </div>
+                <div class="calculated-field">
+                    <label>Deductible Meal Costs</label>
+                    <span id="totalMealCosts">0.00 CHF</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other Professional Costs -->
+        <div class="form-subsection">
+            <h4>Other Professional Costs</h4>
+            <div id="otherProfessionalCostsList">
+                <!-- Other costs will be dynamically added here -->
+            </div>
+            <button class="btn" onclick="addOtherProfessionalCost()">Add Other Cost</button>
+        </div>
+
+        <!-- Professional Costs Summary -->
+        <div class="form-subsection">
+            <h4>Professional Costs Summary</h4>
+            <div class="calculation-summary">
+                <div class="calculation-row">
+                    <span>Commuting Costs:</span>
+                    <span id="summaryCommuting">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Meal Costs:</span>
+                    <span id="summaryMeals">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Other Professional Costs:</span>
+                    <span id="summaryOtherCosts">0.00 CHF</span>
+                </div>
+                <div class="calculation-row total-row">
+                    <span>Total Professional Costs:</span>
+                    <span id="grandTotalProfessional">0.00 CHF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Other Professional Cost Template (hidden) -->
+<div id="otherCostTemplate" style="display: none;">
+    <div class="other-cost-item">
+        <div class="form-group">
+            <div>
+                <label>Description</label>
+                <input type="text" class="otherCostDescription" placeholder="e.g., Professional clothing, tools, books">
+            </div>
+            <div>
+                <label>Amount (CHF)</label>
+                <input type="number" class="otherCostAmount" step="0.01" placeholder="0.00" onchange="calculateOtherCosts()">
+            </div>
+        </div>
+        <div class="form-group">
+            <div>
+                <label>Employer Reimbursement (CHF)</label>
+                <input type="number" class="otherCostReimbursement" step="0.01" placeholder="0.00" onchange="calculateOtherCosts()">
+            </div>
+            <div style="display: flex; align-items: center;">
+                <button class="btn-small remove-btn" onclick="removeOtherCost(this)">Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.other-cost-item {
+    margin: 15px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+</style>
+
+<script>
+function updateCommutingCalculations() {
+    const method = document.getElementById('transportMethod').value;
+    const workingDays = parseFloat(document.getElementById('workingDays').value) || 220;
+    
+    // Show/hide sections based on transport method
+    const publicSection = document.getElementById('publicTransportSection');
+    const privateSection = document.getElementById('privateVehicleSection');
+    
+    if (method === 'public') {
+        publicSection.style.display = 'block';
+        privateSection.style.display = 'none';
+    } else if (method === 'private') {
+        publicSection.style.display = 'none';
+        privateSection.style.display = 'block';
+    } else { // mixed
+        publicSection.style.display = 'block';
+        privateSection.style.display = 'block';
+    }
+    
+    let totalCommuting = 0;
+    
+    if (method === 'public' || method === 'mixed') {
+        const monthlyPass = parseFloat(document.getElementById('monthlyPass').value) || 0;
+        const employerContribution = parseFloat(document.getElementById('employerTransportContribution').value) || 0;
+        const publicCost = Math.max(0, (monthlyPass * 12) - (employerContribution * 12));
+        
+        if (method === 'mixed') {
+            totalCommuting += publicCost / 2; // Split for mixed
+        } else {
+            totalCommuting = publicCost;
+        }
+    }
+    
+    if (method === 'private' || method === 'mixed') {
+        const distance = parseFloat(document.getElementById('commutingDistance').value) || 0;
+        const rate = parseFloat(document.getElementById('vehicleRate').value) || 0.70;
+        const privateCost = distance * 2 * workingDays * rate; // Round trip
+        
+        if (method === 'mixed') {
+            totalCommuting += privateCost / 2; // Split for mixed
+        } else {
+            totalCommuting = privateCost;
+        }
+    }
+    
+    document.getElementById('totalCommutingCosts').textContent = totalCommuting.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    calculateProfessionalTotals();
+}
+
+function updateMealCalculations() {
+    const mealDays = parseFloat(document.getElementById('mealDays').value) || 0;
+    const mealRate = parseFloat(document.getElementById('mealRate').value) || 15;
+    const employerMealContribution = parseFloat(document.getElementById('employerMealContribution').value) || 0;
+    
+    const totalMealCosts = Math.max(0, (mealDays * mealRate) - employerMealContribution);
+    
+    document.getElementById('totalMealCosts').textContent = totalMealCosts.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    calculateProfessionalTotals();
+}
+
+function addOtherProfessionalCost() {
+    const template = document.getElementById('otherCostTemplate');
+    const newCost = template.cloneNode(true);
+    newCost.id = '';
+    newCost.style.display = 'block';
+    
+    document.getElementById('otherProfessionalCostsList').appendChild(newCost);
+    calculateOtherCosts();
+}
+
+function removeOtherCost(btn) {
+    btn.closest('.other-cost-item').remove();
+    calculateOtherCosts();
+}
+
+function calculateOtherCosts() {
+    const otherCosts = document.querySelectorAll('.other-cost-item:not(#otherCostTemplate)');
+    let totalOther = 0;
+    
+    otherCosts.forEach(cost => {
+        const amount = parseFloat(cost.querySelector('.otherCostAmount').value) || 0;
+        const reimbursement = parseFloat(cost.querySelector('.otherCostReimbursement').value) || 0;
+        totalOther += Math.max(0, amount - reimbursement);
+    });
+    
+    calculateProfessionalTotals();
+    return totalOther;
+}
+
+function calculateProfessionalTotals() {
+    // Get commuting costs
+    const commutingText = document.getElementById('totalCommutingCosts').textContent;
+    const commutingCosts = parseFloat(commutingText.replace(/[^\d.-]/g, '')) || 0;
+    
+    // Get meal costs  
+    const mealText = document.getElementById('totalMealCosts').textContent;
+    const mealCosts = parseFloat(mealText.replace(/[^\d.-]/g, '')) || 0;
+    
+    // Get other costs
+    const otherCosts = calculateOtherCosts();
+    
+    const grandTotal = commutingCosts + mealCosts + otherCosts;
+    
+    // Update summary
+    document.getElementById('summaryCommuting').textContent = commutingCosts.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('summaryMeals').textContent = mealCosts.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('summaryOtherCosts').textContent = otherCosts.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('grandTotalProfessional').textContent = grandTotal.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    return {
+        commutingCosts,
+        mealCosts,
+        otherCosts,
+        grandTotal
+    };
+}
+
+// Initialize calculations
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('professional-costs')) {
+        updateCommutingCalculations();
+        updateMealCalculations();
+        addOtherProfessionalCost(); // Add one example
+    }
+});
+</script>
+</div>

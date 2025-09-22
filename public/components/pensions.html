@@ -1,0 +1,361 @@
+<div id="pensions" class="tab-content">
+    <div class="form-section">
+        <h3>Renten und Ersatzeinkünfte - Pensions & Substitute Income</h3>
+        <p>Record all pension payments, social security benefits, and substitute income according to Canton Aargau requirements.</p>
+        
+        <div class="pensions-controls">
+            <button class="btn add-pension-btn" onclick="addPension()">Add Pension/Benefit</button>
+        </div>
+
+        <!-- Pensions List -->
+        <div id="pensionsList">
+            <!-- Pensions will be dynamically added here -->
+        </div>
+
+        <!-- Information Box -->
+        <div class="form-subsection info-box">
+            <h4>Important Information</h4>
+            <ul>
+                <li><strong>AHV/IV:</strong> Old Age and Disability Insurance payments</li>
+                <li><strong>BVG:</strong> Occupational pension benefits (2nd pillar)</li>
+                <li><strong>ALV:</strong> Unemployment benefits</li>
+                <li><strong>Tax-free portions:</strong> Some pension types have tax-free components</li>
+                <li><strong>Withholding tax:</strong> Foreign pensions may have withholding tax deducted</li>
+            </ul>
+        </div>
+
+        <!-- Pensions Summary -->
+        <div class="form-subsection">
+            <h4>Pensions & Benefits Summary</h4>
+            <div class="calculation-summary">
+                <div class="calculation-row">
+                    <span>AHV/IV (1st Pillar):</span>
+                    <span id="totalAHVIV">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>BVG/Occupational (2nd Pillar):</span>
+                    <span id="totalBVG">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>ALV/Unemployment:</span>
+                    <span id="totalALV">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Other Benefits:</span>
+                    <span id="totalOtherBenefits">0.00 CHF</span>
+                </div>
+                <div class="calculation-row total-row">
+                    <span>Total Gross Pensions:</span>
+                    <span id="grandTotalPensions">0.00 CHF</span>
+                </div>
+                <div class="calculation-row tax-free-row">
+                    <span>Tax-Free Portion:</span>
+                    <span id="totalTaxFreePortion">0.00 CHF</span>
+                </div>
+                <div class="calculation-row taxable-row">
+                    <span>Taxable Pension Income:</span>
+                    <span id="totalTaxablePensions">0.00 CHF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pension Template (hidden) -->
+<div id="pensionTemplate" style="display: none;">
+    <div class="pension-item">
+        <div class="pension-header">
+            <span class="pension-title">Pension/Benefit #<span class="pension-number">1</span></span>
+            <button class="btn-small remove-btn" onclick="removePension(this)">Remove</button>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Pension/Benefit Type</label>
+                <select class="pensionType" onchange="updatePensionCalculations(this)">
+                    <option value="AHV">AHV (Old Age Insurance)</option>
+                    <option value="IV">IV (Disability Insurance)</option>
+                    <option value="BVG">BVG (Occupational Pension)</option>
+                    <option value="ALV">ALV (Unemployment Benefits)</option>
+                    <option value="daily_allowances">Daily Allowances</option>
+                    <option value="foreign_pension">Foreign Pension</option>
+                    <option value="private_pension">Private Pension (3a/3b)</option>
+                    <option value="other">Other Benefits</option>
+                </select>
+            </div>
+            <div>
+                <label>Payer/Institution</label>
+                <input type="text" class="pensionPayer" placeholder="e.g., SVA Aargau, Insurance company">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Gross Annual Amount (CHF)</label>
+                <input type="number" class="pensionGrossAmount" step="0.01" placeholder="0.00" onchange="updatePensionCalculations(this)">
+            </div>
+            <div>
+                <label>Payment Period</label>
+                <select class="pensionPeriod">
+                    <option value="full_year">Full Year (12 months)</option>
+                    <option value="partial">Partial Year</option>
+                    <option value="lump_sum">Lump Sum Payment</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group partial-period" style="display: none;">
+            <div>
+                <label>Start Date</label>
+                <input type="date" class="pensionStartDate">
+            </div>
+            <div>
+                <label>End Date</label>
+                <input type="date" class="pensionEndDate">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Tax-Free Portion (CHF)</label>
+                <input type="number" class="pensionTaxFreePortion" step="0.01" placeholder="0.00" onchange="updatePensionCalculations(this)">
+                <small class="form-note">Only applicable to certain pension types</small>
+            </div>
+            <div>
+                <label>Withholding Tax Deducted (CHF)</label>
+                <input type="number" class="pensionWithholding" step="0.01" placeholder="0.00">
+            </div>
+        </div>
+        
+        <div class="form-group foreign-pension-details" style="display: none;">
+            <div>
+                <label>Country of Origin</label>
+                <select class="pensionCountry">
+                    <option value="">Select Country</option>
+                    <option value="DE">Germany</option>
+                    <option value="FR">France</option>
+                    <option value="IT">Italy</option>
+                    <option value="AT">Austria</option>
+                    <option value="US">United States</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label>Double Taxation Treaty</label>
+                <select class="pensionTreaty">
+                    <option value="yes">Yes - Treaty applies</option>
+                    <option value="no">No treaty</option>
+                    <option value="unknown">Unknown</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="calculated-field">
+            <label>Taxable Amount</label>
+            <span class="pensionTaxableAmount">0.00 CHF</span>
+        </div>
+    </div>
+</div>
+
+<style>
+.pension-item {
+    margin: 20px 0;
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+}
+
+.pension-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.pension-title {
+    font-weight: bold;
+    color: #1e3c72;
+    font-size: 1.1em;
+}
+
+.info-box {
+    background: #e8f4f8;
+    border: 1px solid #bee5eb;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.info-box ul {
+    margin: 10px 0 0 20px;
+}
+
+.info-box li {
+    margin: 5px 0;
+}
+
+.foreign-pension-details {
+    background: #fff3cd;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ffeaa7;
+}
+
+.partial-period {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.tax-free-row {
+    background: #d4edda;
+    color: #155724;
+    font-weight: bold;
+}
+
+.taxable-row {
+    background: #e8f4f8;
+    color: #1e3c72;
+    font-weight: bold;
+    font-size: 1.05em;
+}
+</style>
+
+<script>
+let pensionsCount = 0;
+
+function addPension() {
+    pensionsCount++;
+    const template = document.getElementById('pensionTemplate');
+    const newPension = template.cloneNode(true);
+    newPension.id = '';
+    newPension.style.display = 'block';
+    
+    // Update pension number
+    newPension.querySelector('.pension-number').textContent = pensionsCount;
+    
+    // Add to list
+    document.getElementById('pensionsList').appendChild(newPension);
+    
+    calculatePensionsTotals();
+}
+
+function removePension(btn) {
+    btn.closest('.pension-item').remove();
+    calculatePensionsTotals();
+}
+
+function updatePensionCalculations(element) {
+    const pensionItem = element.closest('.pension-item');
+    const pensionType = pensionItem.querySelector('.pensionType').value;
+    const grossAmount = parseFloat(pensionItem.querySelector('.pensionGrossAmount').value) || 0;
+    const taxFreePortion = parseFloat(pensionItem.querySelector('.pensionTaxFreePortion').value) || 0;
+    const period = pensionItem.querySelector('.pensionPeriod').value;
+    
+    // Show/hide foreign pension details
+    const foreignDetails = pensionItem.querySelector('.foreign-pension-details');
+    if (pensionType === 'foreign_pension') {
+        foreignDetails.style.display = 'flex';
+    } else {
+        foreignDetails.style.display = 'none';
+    }
+    
+    // Show/hide partial period details
+    const partialPeriod = pensionItem.querySelector('.partial-period');
+    if (period === 'partial') {
+        partialPeriod.style.display = 'flex';
+    } else {
+        partialPeriod.style.display = 'none';
+    }
+    
+    // Calculate taxable amount
+    let taxableAmount = Math.max(0, grossAmount - taxFreePortion);
+    
+    // Apply period adjustments if needed
+    if (period === 'partial') {
+        const startDate = new Date(pensionItem.querySelector('.pensionStartDate').value);
+        const endDate = new Date(pensionItem.querySelector('.pensionEndDate').value);
+        
+        if (startDate && endDate && startDate <= endDate) {
+            const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+                          (endDate.getMonth() - startDate.getMonth()) + 1;
+            taxableAmount = taxableAmount * (months / 12);
+        }
+    }
+    
+    pensionItem.querySelector('.pensionTaxableAmount').textContent = taxableAmount.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    calculatePensionsTotals();
+}
+
+function calculatePensionsTotals() {
+    const pensions = document.querySelectorAll('.pension-item:not(#pensionTemplate)');
+    let totalAHVIV = 0;
+    let totalBVG = 0;
+    let totalALV = 0;
+    let totalOther = 0;
+    let totalTaxFree = 0;
+    let totalGross = 0;
+    
+    pensions.forEach(pension => {
+        const pensionType = pension.querySelector('.pensionType').value;
+        const grossAmount = parseFloat(pension.querySelector('.pensionGrossAmount').value) || 0;
+        const taxFreePortion = parseFloat(pension.querySelector('.pensionTaxFreePortion').value) || 0;
+        
+        totalGross += grossAmount;
+        totalTaxFree += taxFreePortion;
+        
+        // Categorize by type
+        switch(pensionType) {
+            case 'AHV':
+            case 'IV':
+                totalAHVIV += grossAmount;
+                break;
+            case 'BVG':
+            case 'private_pension':
+                totalBVG += grossAmount;
+                break;
+            case 'ALV':
+            case 'daily_allowances':
+                totalALV += grossAmount;
+                break;
+            case 'foreign_pension':
+            case 'other':
+                totalOther += grossAmount;
+                break;
+        }
+    });
+    
+    const totalTaxable = totalGross - totalTaxFree;
+    
+    // Update totals
+    document.getElementById('totalAHVIV').textContent = totalAHVIV.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalBVG').textContent = totalBVG.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalALV').textContent = totalALV.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalOtherBenefits').textContent = totalOther.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('grandTotalPensions').textContent = totalGross.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalTaxFreePortion').textContent = totalTaxFree.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalTaxablePensions').textContent = totalTaxable.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    return {
+        totalAHVIV,
+        totalBVG,
+        totalALV,
+        totalOther,
+        totalTaxFree,
+        totalGross,
+        totalTaxable
+    };
+}
+
+// Initialize with one pension for demonstration
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('pensions')) {
+        addPension();
+    }
+});
+</script>
+</div>

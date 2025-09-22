@@ -1,0 +1,120 @@
+You are an expert frontend engineer and conversion copywriter. Build a production-ready, responsive landing page for a Swiss tax assistant SaaS that helps individuals complete their Swiss tax declaration, as an affordable alternative to human tax experts (typically CHF 150–600+ per filing).
+
+### Tech + Output
+- Produce a single-page app: `index.html`, `styles.css` (or Tailwind CDN), and `app.js` with minimal vanilla JS.
+- Use Tailwind (via CDN) and semantic HTML5 for accessibility.
+- No build step required; must run by opening `index.html`.
+- Include favicon, Open Graph/Twitter tags, and JSON-LD schema.
+
+### Branding
+- Temporary product name placeholder: {{PRODUCT_NAME}} (e.g., “HelvetiTax”, “Fiscora”, or “TaxPilot”).
+- Swiss-inspired palette: Swiss Red `#D00000`, Alpine Blue `#1E3A8A`, Neutral Grey `#6B7280`, White `#FFFFFF`. Use lots of whitespace and clean typography (Inter or system font stack).
+- Simple logo lockup: a cross/checkbox motif + {{PRODUCT_NAME}} (SVG inline).
+
+### Hero (above the fold)
+- Headline (localized): 
+  - EN: “Your Swiss Tax Declaration—Done Right in Minutes”
+  - FR: “Votre déclaration d’impôts en Suisse, en quelques minutes”
+  - DE: “Ihre Schweizer Steuererklärung – in wenigen Minuten erledigt”
+  - IT: “La tua dichiarazione fiscale svizzera, in pochi minuti”
+- Subheadline: “AI-assisted guidance tailored to your canton, with checks to avoid costly mistakes.”
+- Primary CTA button: “Start for Free” → scroll to pricing and signup form.
+- Secondary CTA: “See How It Works” → scroll to product tour.
+- Trust badges row: “Data encrypted • Works for all cantons • GDPR compliant • No hidden fees”.
+
+### Language Switcher
+- Top-right dropdown with EN/FR/DE/IT. All visible copy must switch language instantly (store translations in a JS object; default to FR). Persist selection in `localStorage`.
+
+### Social Proof
+- Rotating testimonials (3–5) with name, canton (e.g., “ZH”), and short quote (localized strings).
+- “As seen in” placeholder logos (neutral grayscale) — easily replaceable.
+
+### How It Works (3–4 steps)
+1) Answer a few questions by canton.
+2) We prefill deductions and check for missed benefits.
+3) Generate the official tax files/forms or a ready-to-submit package.
+4) Optional human review add-on (paid).
+
+Include simple icons and a light animated scroll reveal.
+
+### Product Tour
+- Three feature cards with mini screenshots/placeholders:
+  - Smart Questionnaire (by canton & family status)
+  - Deduction Checker (housing, kids, 2nd pillar, commuting, etc.)
+  - Error/Compliance Checks (avoid common mistakes)
+- An expandable section for “Expat mode” and “Cross-border scenarios”.
+
+### Pricing (with comparison vs tax experts)
+- Pricing grid (all localized labels):
+  - **Starter** – CHF 39 / filing: 1 declaration; guided flow; PDF export.
+  - **Plus** – CHF 79 / filing: all Starter + deduction checker + live chat.
+  - **Pro** – CHF 149 / filing: all Plus + *optional* human review (24–48h SLA) + priority support.
+- Small line: “Typical tax expert = CHF 150–600+ per filing. Save up to 75%.”
+- Include a **mini ROI calculator** widget:
+  - Inputs: “What did you pay last year?” (CHF), “Time spent” (hours).
+  - Output: “Estimated savings vs {{PRODUCT_NAME}}” (simple calc in JS; show CHF and hours saved).
+- CTA: “Start for Free” (email capture) and “Contact Sales” (for bundles).
+
+### Comparison Table
+Columns: {{PRODUCT_NAME}} vs “Typical Tax Expert”
+Rows: Price per filing, Turnaround, Canton-specific guidance, Deduction checks, Data privacy, Availability, Upsell (human review). Show where {{PRODUCT_NAME}} wins on speed/price; acknowledge the expert’s strength (bespoke complex cases).
+
+### Lead Capture & Onboarding
+- Email field + canton dropdown + “Get Started” button. Validate inputs; show success state.
+- GDPR checkbox (localized) with link to Privacy Policy and Terms.
+- Optional “Book a 15-min demo” button (placeholder Calendly link `#`).
+
+### FAQ (8–10 Q/A)
+Include localized entries:
+- Is it valid for my canton?
+- Can I import last year’s data?
+- How do you handle dependents/children?
+- Is my data secure and private?
+- Can I still talk to a human?
+- Refund policy?
+- When do I need a tax expert instead?
+- How do I submit to the authorities?
+
+### Footer
+- Links: Pricing, FAQ, Security, Privacy, Terms, Contact.
+- Address placeholder (Switzerland), contact email placeholder, social links.
+- Cookie consent banner (basic) with “Accept all” / “Manage”.
+
+### SEO & Performance
+- Fast LCP (optimize hero, lazy-load images).
+- Meta title/description per language.
+- JSON-LD `Organization` + `Product` + `FAQPage`.
+- Canonical link, sitemap placeholder.
+- Basic `robots.txt`.
+
+### Analytics & Integrations (placeholders)
+- Out-of-the-box `window.analytics.track()` hooks on CTAs.
+- Commented placeholders for Plausible or GA4.
+- Placeholder Stripe Checkout link buttons (no keys required).
+- Placeholder support chat widget loader.
+
+### Accessibility
+- Keyboard navigable, focus styles, aria-labels, sufficient color contrast.
+- Forms with labels and error messages.
+
+### Copywriting (provide localized defaults)
+Create concise, reassuring copy in EN/FR/DE/IT for:
+- Hero headline & subheadline
+- CTA labels
+- Feature blurbs (40–60 chars each)
+- Pricing plan descriptions
+- Comparison row content
+- 10 FAQ Q/As (2–3 lines each)
+- Cookie banner text
+Store all strings in a `translations` object keyed by language.
+
+### Acceptance Criteria
+- Page looks modern, trustworthy, and Swiss-flavored.
+- Language switcher updates ALL visible text instantly.
+- Pricing and comparison clearly show savings vs CHF 150–600+ expert fees.
+- ROI calculator works and updates on input.
+- Email capture validates and shows success.
+- JSON-LD valid, and the page passes basic Lighthouse checks.
+- All static assets are placeholders that I can easily swap later.
+
+Deliver now the three files (`index.html`, `styles.css` if not using Tailwind CDN, and `app.js`). Ensure everything runs with no build step.

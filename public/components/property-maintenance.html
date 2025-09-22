@@ -1,0 +1,346 @@
+<div id="property-maintenance" class="tab-content">
+    <div class="form-section">
+        <h3>Liegenschaftsunterhalt (LUK) - Property Maintenance</h3>
+        <p>Property maintenance costs according to Canton Aargau LUK guidelines. Energy efficiency investments receive special deduction treatment.</p>
+        
+        <div class="maintenance-controls">
+            <button class="btn add-maintenance-btn" onclick="addMaintenanceItem()">Add Maintenance Item</button>
+        </div>
+
+        <!-- Maintenance Items List -->
+        <div id="maintenanceList">
+            <!-- Maintenance items will be dynamically added here -->
+        </div>
+
+        <!-- LUK Guidelines -->
+        <div class="form-subsection">
+            <h4>LUK Guidelines Summary</h4>
+            <div class="guidelines-grid">
+                <div class="guideline-item">
+                    <strong>Regular Maintenance</strong>
+                    <p>Ongoing repairs, painting, cleaning, small replacements</p>
+                </div>
+                <div class="guideline-item">
+                    <strong>Energy Efficiency Investments (EEI)</strong>
+                    <p>Insulation, heating systems, solar panels, windows - enhanced deductibility</p>
+                </div>
+                <div class="guideline-item">
+                    <strong>Administrative Costs</strong>
+                    <p>Property management, accounting, legal fees</p>
+                </div>
+                <div class="guideline-item">
+                    <strong>Insurance</strong>
+                    <p>Building insurance, liability insurance</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Maintenance Summary -->
+        <div class="form-subsection">
+            <h4>Maintenance Summary</h4>
+            <div class="calculation-summary">
+                <div class="calculation-row">
+                    <span>Regular Maintenance:</span>
+                    <span id="totalRegularMaintenance">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Energy Efficiency Investments:</span>
+                    <span id="totalEEI">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Administrative & Insurance:</span>
+                    <span id="totalAdminInsurance">0.00 CHF</span>
+                </div>
+                <div class="calculation-row total-row">
+                    <span>Total Maintenance Costs:</span>
+                    <span id="grandTotalMaintenance">0.00 CHF</span>
+                </div>
+                <div class="calculation-row eei-special">
+                    <span>EEI Special Deduction Available:</span>
+                    <span id="eeiSpecialDeduction">0.00 CHF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Maintenance Item Template (hidden) -->
+<div id="maintenanceTemplate" style="display: none;">
+    <div class="maintenance-item">
+        <div class="maintenance-header">
+            <span class="maintenance-title">Maintenance Item #<span class="maintenance-number">1</span></span>
+            <div class="maintenance-actions">
+                <span class="eei-marker" title="Energy Efficiency Investment">EEI</span>
+                <button class="btn-small remove-btn" onclick="removeMaintenanceItem(this)">Remove</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Related Property Address</label>
+                <input type="text" class="maintenancePropertyAddress" placeholder="Property address">
+            </div>
+            <div>
+                <label>Maintenance Category</label>
+                <select class="maintenanceCategory" onchange="updateMaintenanceCalculations(this)">
+                    <option value="regular">Regular Maintenance</option>
+                    <option value="eei">Energy Efficiency Investment</option>
+                    <option value="administrative">Administrative Costs</option>
+                    <option value="insurance">Insurance Premiums</option>
+                    <option value="renovations">Renovations</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Description</label>
+                <input type="text" class="maintenanceDescription" placeholder="Description of work/expense">
+            </div>
+            <div>
+                <label>Service Provider/Contractor</label>
+                <input type="text" class="maintenanceProvider" placeholder="Company or contractor name">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Date Completed/Paid</label>
+                <input type="date" class="maintenanceDate">
+            </div>
+            <div>
+                <label>Amount (CHF)</label>
+                <input type="number" class="maintenanceAmount" step="0.01" placeholder="0.00" onchange="updateMaintenanceCalculations(this)">
+            </div>
+        </div>
+        
+        <div class="form-group eei-details" style="display: none;">
+            <div>
+                <label>Energy Efficiency Type</label>
+                <select class="eeiType">
+                    <option value="insulation">Building Insulation</option>
+                    <option value="heating">Heating System Upgrade</option>
+                    <option value="solar">Solar Panel Installation</option>
+                    <option value="windows">Energy-Efficient Windows</option>
+                    <option value="ventilation">Ventilation System</option>
+                    <option value="other">Other EEI Measure</option>
+                </select>
+            </div>
+            <div>
+                <label>Eligible for EEI Deduction</label>
+                <select class="eeiEligible" onchange="updateMaintenanceCalculations(this)">
+                    <option value="yes">Yes - Meets EEI criteria</option>
+                    <option value="no">No - Standard deduction only</option>
+                    <option value="partial">Partial - Mixed investment</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Employer Reimbursement</label>
+                <input type="number" class="employerReimbursement" step="0.01" placeholder="0.00" onchange="updateMaintenanceCalculations(this)">
+            </div>
+            <div class="calculated-field">
+                <label>Deductible Amount</label>
+                <span class="deductibleAmount">0.00 CHF</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.guidelines-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.guideline-item {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #1e3c72;
+}
+
+.guideline-item strong {
+    color: #1e3c72;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.maintenance-item {
+    margin: 20px 0;
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+}
+
+.maintenance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.maintenance-title {
+    font-weight: bold;
+    color: #1e3c72;
+    font-size: 1.1em;
+}
+
+.maintenance-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eei-marker {
+    display: none;
+    background: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.eei-marker.visible {
+    display: inline-block;
+}
+
+.eei-details {
+    background: #e8f5e8;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #28a745;
+}
+
+.eei-special {
+    background: #e8f5e8;
+    font-weight: bold;
+    color: #28a745;
+}
+</style>
+
+<script>
+let maintenanceCount = 0;
+
+function addMaintenanceItem() {
+    maintenanceCount++;
+    const template = document.getElementById('maintenanceTemplate');
+    const newItem = template.cloneNode(true);
+    newItem.id = '';
+    newItem.style.display = 'block';
+    
+    // Update maintenance number
+    newItem.querySelector('.maintenance-number').textContent = maintenanceCount;
+    
+    // Add to list
+    document.getElementById('maintenanceList').appendChild(newItem);
+    
+    calculateMaintenanceTotals();
+}
+
+function removeMaintenanceItem(btn) {
+    btn.closest('.maintenance-item').remove();
+    calculateMaintenanceTotals();
+}
+
+function updateMaintenanceCalculations(element) {
+    const maintenanceItem = element.closest('.maintenance-item');
+    const category = maintenanceItem.querySelector('.maintenanceCategory').value;
+    const amount = parseFloat(maintenanceItem.querySelector('.maintenanceAmount').value) || 0;
+    const employerReimbursement = parseFloat(maintenanceItem.querySelector('.employerReimbursement').value) || 0;
+    
+    // Show/hide EEI details
+    const eeiDetails = maintenanceItem.querySelector('.eei-details');
+    const eeiMarker = maintenanceItem.querySelector('.eei-marker');
+    
+    if (category === 'eei') {
+        eeiDetails.style.display = 'flex';
+        eeiMarker.classList.add('visible');
+    } else {
+        eeiDetails.style.display = 'none';
+        eeiMarker.classList.remove('visible');
+    }
+    
+    // Calculate deductible amount
+    let deductibleAmount = Math.max(0, amount - employerReimbursement);
+    
+    // Apply EEI special rules if applicable
+    if (category === 'eei') {
+        const eeiEligible = maintenanceItem.querySelector('.eeiEligible').value;
+        if (eeiEligible === 'partial') {
+            deductibleAmount = deductibleAmount * 0.7; // Partial EEI treatment
+        }
+        // Full EEI gets 100% deduction (no additional calculation needed)
+    }
+    
+    maintenanceItem.querySelector('.deductibleAmount').textContent = deductibleAmount.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    calculateMaintenanceTotals();
+}
+
+function calculateMaintenanceTotals() {
+    const maintenanceItems = document.querySelectorAll('.maintenance-item:not(#maintenanceTemplate)');
+    let totalRegular = 0;
+    let totalEEI = 0;
+    let totalAdminInsurance = 0;
+    let eeiSpecialDeduction = 0;
+    
+    maintenanceItems.forEach(item => {
+        const category = item.querySelector('.maintenanceCategory').value;
+        const deductibleText = item.querySelector('.deductibleAmount').textContent;
+        const deductibleAmount = parseFloat(deductibleText.replace(/[^\d.-]/g, '')) || 0;
+        
+        switch(category) {
+            case 'regular':
+            case 'renovations':
+                totalRegular += deductibleAmount;
+                break;
+            case 'eei':
+                totalEEI += deductibleAmount;
+                const eeiEligible = item.querySelector('.eeiEligible').value;
+                if (eeiEligible === 'yes') {
+                    // EEI gets additional 20% special deduction in some cases
+                    eeiSpecialDeduction += deductibleAmount * 0.2;
+                }
+                break;
+            case 'administrative':
+            case 'insurance':
+                totalAdminInsurance += deductibleAmount;
+                break;
+        }
+    });
+    
+    const grandTotal = totalRegular + totalEEI + totalAdminInsurance;
+    
+    // Update totals
+    document.getElementById('totalRegularMaintenance').textContent = totalRegular.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalEEI').textContent = totalEEI.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalAdminInsurance').textContent = totalAdminInsurance.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('grandTotalMaintenance').textContent = grandTotal.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('eeiSpecialDeduction').textContent = eeiSpecialDeduction.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    return {
+        totalRegular,
+        totalEEI,
+        totalAdminInsurance,
+        eeiSpecialDeduction,
+        grandTotal
+    };
+}
+
+// Initialize with one maintenance item for demonstration
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('property-maintenance')) {
+        addMaintenanceItem();
+    }
+});
+</script>
+</div>

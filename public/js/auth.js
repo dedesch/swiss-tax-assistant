@@ -41,6 +41,11 @@ class AuthManager {
                 closeModal('loginModal');
                 document.getElementById('loginForm').reset();
                 this.updateAuthUI();
+                
+                // Redirect to tax declaration app after successful login
+                setTimeout(() => {
+                    window.location.href = '/app';
+                }, 1500);
             } else {
                 showNotification(result.error || 'Login failed', 'error');
             }
@@ -69,6 +74,11 @@ class AuthManager {
                 closeModal('registerModal');
                 document.getElementById('registerForm').reset();
                 this.updateAuthUI();
+                
+                // Redirect to tax declaration app after successful registration
+                setTimeout(() => {
+                    window.location.href = '/app';
+                }, 1500);
             } else {
                 showNotification(result.error || 'Registration failed', 'error');
             }

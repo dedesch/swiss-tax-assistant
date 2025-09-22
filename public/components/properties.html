@@ -1,0 +1,255 @@
+<div id="properties" class="tab-content">
+    <div class="form-section">
+        <h3>Liegenschaftenverzeichnis - Real Estate Register</h3>
+        <p>Real estate holdings according to Canton Aargau requirements. New 2025 valuation: 62% of market rent for imputed rental value.</p>
+        
+        <div class="properties-controls">
+            <button class="btn add-property-btn" onclick="addProperty()">Add Property</button>
+        </div>
+
+        <!-- Properties List -->
+        <div id="propertiesList">
+            <!-- Properties will be dynamically added here -->
+        </div>
+
+        <!-- Properties Summary -->
+        <div class="form-subsection">
+            <h4>Real Estate Summary</h4>
+            <div class="calculation-summary">
+                <div class="calculation-row">
+                    <span>Total Property Tax Value:</span>
+                    <span id="totalPropertyTaxValue">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Total Rental Income:</span>
+                    <span id="totalRentalIncome">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Total Imputed Rent:</span>
+                    <span id="totalImputedRent">0.00 CHF</span>
+                </div>
+                <div class="calculation-row total-row">
+                    <span>Total Real Estate Value:</span>
+                    <span id="grandTotalProperties">0.00 CHF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Property Template (hidden) -->
+<div id="propertyTemplate" style="display: none;">
+    <div class="property-item">
+        <div class="property-header">
+            <span class="property-title">Property #<span class="property-number">1</span></span>
+            <button class="btn-small remove-btn" onclick="removeProperty(this)">Remove</button>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Property Address</label>
+                <input type="text" class="propertyAddress" placeholder="Complete address">
+            </div>
+            <div>
+                <label>Municipality</label>
+                <input type="text" class="propertyMunicipality" placeholder="Municipality name">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Canton</label>
+                <select class="propertyCanton">
+                    <option value="AG">Aargau</option>
+                    <option value="other">Other Canton/Country</option>
+                </select>
+            </div>
+            <div>
+                <label>Parcel Number</label>
+                <input type="text" class="propertyParcel" placeholder="Parcel/plot number">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Usage Type</label>
+                <select class="propertyUsage" onchange="updatePropertyCalculations(this)">
+                    <option value="own">Owner-occupied</option>
+                    <option value="rent">Rental property</option>
+                    <option value="mixed">Mixed use</option>
+                    <option value="vacant">Vacant</option>
+                </select>
+            </div>
+            <div>
+                <label>Ownership Percentage (%)</label>
+                <input type="number" class="ownershipPct" step="0.01" min="0" max="100" value="100" onchange="updatePropertyCalculations(this)">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Market Rent (CHF/month)</label>
+                <input type="number" class="marketRent" step="0.01" placeholder="0.00" onchange="updatePropertyCalculations(this)">
+                <small class="form-note">Estimated market rental value</small>
+            </div>
+            <div class="calculated-field">
+                <label>Imputed Rent (62% of market)</label>
+                <span class="imputedRent">0.00 CHF/year</span>
+            </div>
+        </div>
+        
+        <div class="form-group rental-section" style="display: none;">
+            <div>
+                <label>Actual Rental Income (CHF/year)</label>
+                <input type="number" class="actualRentalIncome" step="0.01" placeholder="0.00" onchange="updatePropertyCalculations(this)">
+            </div>
+            <div>
+                <label>Ancillary Costs (CHF/year)</label>
+                <input type="number" class="ancillaryCosts" step="0.01" placeholder="0.00" onchange="updatePropertyCalculations(this)">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Property Tax Value (CHF)</label>
+                <input type="number" class="propertyTaxValue" step="0.01" placeholder="0.00" onchange="updatePropertyCalculations(this)">
+                <small class="form-note">Official tax assessment value</small>
+            </div>
+            <div>
+                <label>Purchase Date</label>
+                <input type="date" class="purchaseDate">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Energy Label</label>
+                <select class="energyLabel">
+                    <option value="">Not specified</option>
+                    <option value="A">A - Very efficient</option>
+                    <option value="B">B - Efficient</option>
+                    <option value="C">C - Fairly efficient</option>
+                    <option value="D">D - Less efficient</option>
+                    <option value="E">E - Inefficient</option>
+                    <option value="F">F - Very inefficient</option>
+                    <option value="G">G - Extremely inefficient</option>
+                </select>
+            </div>
+            <div class="calculated-field">
+                <label>Annual Taxable Income</label>
+                <span class="propertyTaxableIncome">0.00 CHF</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let propertiesCount = 0;
+
+function addProperty() {
+    propertiesCount++;
+    const template = document.getElementById('propertyTemplate');
+    const newProperty = template.cloneNode(true);
+    newProperty.id = '';
+    newProperty.style.display = 'block';
+    
+    // Update property number
+    newProperty.querySelector('.property-number').textContent = propertiesCount;
+    
+    // Add to list
+    document.getElementById('propertiesList').appendChild(newProperty);
+    
+    calculatePropertiesTotals();
+}
+
+function removeProperty(btn) {
+    btn.closest('.property-item').remove();
+    calculatePropertiesTotals();
+}
+
+function updatePropertyCalculations(element) {
+    const propertyItem = element.closest('.property-item');
+    const usage = propertyItem.querySelector('.propertyUsage').value;
+    const marketRent = parseFloat(propertyItem.querySelector('.marketRent').value) || 0;
+    const ownershipPct = parseFloat(propertyItem.querySelector('.ownershipPct').value) || 100;
+    const actualRentalIncome = parseFloat(propertyItem.querySelector('.actualRentalIncome').value) || 0;
+    const ancillaryCosts = parseFloat(propertyItem.querySelector('.ancillaryCosts').value) || 0;
+    
+    // Show/hide rental section
+    const rentalSection = propertyItem.querySelector('.rental-section');
+    if (usage === 'rent' || usage === 'mixed') {
+        rentalSection.style.display = 'flex';
+    } else {
+        rentalSection.style.display = 'none';
+    }
+    
+    // Calculate imputed rent (62% of market rent, annual)
+    const imputedRentAnnual = marketRent * 12 * 0.62 * (ownershipPct / 100);
+    propertyItem.querySelector('.imputedRent').textContent = imputedRentAnnual.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF/year';
+    
+    // Calculate taxable income
+    let taxableIncome = 0;
+    if (usage === 'own') {
+        // Owner-occupied: imputed rent is taxable income
+        taxableIncome = imputedRentAnnual;
+    } else if (usage === 'rent') {
+        // Rental property: actual rental income minus ancillary costs
+        taxableIncome = Math.max(0, actualRentalIncome - ancillaryCosts) * (ownershipPct / 100);
+    } else if (usage === 'mixed') {
+        // Mixed use: combination of both
+        taxableIncome = (imputedRentAnnual / 2) + (Math.max(0, actualRentalIncome - ancillaryCosts) / 2) * (ownershipPct / 100);
+    }
+    
+    propertyItem.querySelector('.propertyTaxableIncome').textContent = taxableIncome.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    calculatePropertiesTotals();
+}
+
+function calculatePropertiesTotals() {
+    const properties = document.querySelectorAll('.property-item:not(#propertyTemplate)');
+    let totalTaxValue = 0;
+    let totalRentalIncome = 0;
+    let totalImputedRent = 0;
+    
+    properties.forEach(property => {
+        // Property tax value
+        const taxValue = parseFloat(property.querySelector('.propertyTaxValue').value) || 0;
+        const ownershipPct = parseFloat(property.querySelector('.ownershipPct').value) || 100;
+        totalTaxValue += taxValue * (ownershipPct / 100);
+        
+        // Rental income
+        const actualRental = parseFloat(property.querySelector('.actualRentalIncome').value) || 0;
+        const usage = property.querySelector('.propertyUsage').value;
+        if (usage === 'rent' || usage === 'mixed') {
+            totalRentalIncome += actualRental * (ownershipPct / 100);
+        }
+        
+        // Imputed rent
+        const marketRent = parseFloat(property.querySelector('.marketRent').value) || 0;
+        const imputedRent = marketRent * 12 * 0.62 * (ownershipPct / 100);
+        if (usage === 'own' || usage === 'mixed') {
+            totalImputedRent += imputedRent;
+        }
+    });
+    
+    // Update totals
+    document.getElementById('totalPropertyTaxValue').textContent = totalTaxValue.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalRentalIncome').textContent = totalRentalIncome.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalImputedRent').textContent = totalImputedRent.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('grandTotalProperties').textContent = totalTaxValue.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    return {
+        totalTaxValue,
+        totalRentalIncome,
+        totalImputedRent
+    };
+}
+
+// Initialize with one property for demonstration
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('properties')) {
+        addProperty();
+    }
+});
+</script>
+</div>

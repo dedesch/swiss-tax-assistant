@@ -2,28 +2,40 @@
     "name": "swiss-tax-assistant",
     "version": "1.0.0",
     "description": "Swiss Tax Declaration Assistant - Full Stack Application",
-    "main": "index.js",
+    "main": "api/index.js",
     "type": "module",
     "scripts": {
-      "dev": "vercel dev",
-      "build": "echo 'No build step required'",
-      "start": "vercel dev"
+        "dev": "node server.js",
+        "build": "echo 'No build step required'",
+        "start": "node api/index.js",
+        "vercel-build": "echo 'No build step required'"
     },
     "dependencies": {
-      "@vercel/postgres": "^0.8.0",
-      "playwright-aws-lambda": "^0.10.0",
-      "bcryptjs": "^2.4.3",
-      "jsonwebtoken": "^9.0.2",
-      "jspdf": "^2.5.1",
-      "jspdf-autotable": "^3.6.0"
+        "@vercel/postgres": "^0.8.0",
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "jspdf": "^2.5.1",
+        "jspdf-autotable": "^3.6.0",
+        "multer": "^2.0.2",
+        "openai": "^5.22.0",
+        "pg": "^8.16.3",
+        "playwright-aws-lambda": "^0.10.0"
     },
     "devDependencies": {
-      "@types/node": "^20.0.0"
+        "@types/node": "^20.0.0"
     },
     "engines": {
-      "node": ">=18.0.0"
+        "node": ">=18.0.0"
     },
-    "keywords": ["swiss", "tax", "declaration", "assistant", "vercel"],
+    "keywords": [
+        "swiss",
+        "tax",
+        "declaration",
+        "assistant",
+        "vercel"
+    ],
     "author": "Swiss Tax Assistant",
     "license": "MIT"
-  }
+}

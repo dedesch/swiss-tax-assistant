@@ -1,0 +1,327 @@
+<div id="securities" class="tab-content">
+    <div class="form-section">
+        <h3>Wertschriften- und Guthabenverzeichnis (Form 101.05a)</h3>
+        <p>Securities and assets register according to Canton Aargau requirements. Positions with 10%+ shareholding will be automatically marked with "D" for dividend taxation.</p>
+        
+        <div class="securities-controls">
+            <button class="btn add-security-btn" onclick="addSecurity()">Add Security</button>
+            <button class="btn import-btn" onclick="showImportModal()">Import from Bank</button>
+        </div>
+
+        <!-- Securities List -->
+        <div id="securitiesList">
+            <!-- Securities will be dynamically added here -->
+        </div>
+
+        <!-- Gaming Winnings -->
+        <div class="form-subsection">
+            <h4>Gaming Winnings (Spielgewinne)</h4>
+            <div class="form-group">
+                <div>
+                    <label>Lottery/Casino Winnings over CHF 1,000,000</label>
+                    <input type="number" id="gamingWinnings" step="0.01" placeholder="0.00" onchange="calculateSecuritiesTotals()">
+                    <small class="form-note">Only winnings exceeding CHF 1,000,000 are taxable</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Securities Summary -->
+        <div class="form-subsection">
+            <h4>Securities Summary</h4>
+            <div class="calculation-summary">
+                <div class="calculation-row">
+                    <span>Total Securities Value (Dec 31):</span>
+                    <span id="totalSecuritiesValue">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Total Dividend Income:</span>
+                    <span id="totalDividendIncome">0.00 CHF</span>
+                </div>
+                <div class="calculation-row">
+                    <span>Gaming Winnings:</span>
+                    <span id="totalGamingWinnings">0.00 CHF</span>
+                </div>
+                <div class="calculation-row total-row">
+                    <span>Total Securities & Assets:</span>
+                    <span id="grandTotalSecurities">0.00 CHF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Security Template (hidden) -->
+<div id="securityTemplate" style="display: none;">
+    <div class="security-item">
+        <div class="security-header">
+            <span class="security-title">Security #<span class="security-number">1</span></span>
+            <div class="security-actions">
+                <span class="dividend-marker" title="Qualified dividend (10%+ shareholding)">D</span>
+                <button class="btn-small remove-btn" onclick="removeSecurity(this)">Remove</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Security Name/Title</label>
+                <input type="text" class="securityTitle" placeholder="Security name or company">
+            </div>
+            <div>
+                <label>ISIN/Identifier</label>
+                <input type="text" class="securityISIN" placeholder="ISIN or identifier">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Security Type</label>
+                <select class="securityType" onchange="updateSecurityCalculations(this)">
+                    <option value="stock">Stock/Share</option>
+                    <option value="bond">Bond</option>
+                    <option value="fund">Investment Fund</option>
+                    <option value="etf">ETF</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label>Country</label>
+                <select class="securityCountry">
+                    <option value="CH">Switzerland</option>
+                    <option value="US">United States</option>
+                    <option value="DE">Germany</option>
+                    <option value="FR">France</option>
+                    <option value="IT">Italy</option>
+                    <option value="GB">United Kingdom</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Quantity</label>
+                <input type="number" class="securityQuantity" step="0.001" placeholder="0" onchange="updateSecurityCalculations(this)">
+            </div>
+            <div>
+                <label>Price on Dec 31 (Original Currency)</label>
+                <input type="number" class="securityPrice" step="0.01" placeholder="0.00" onchange="updateSecurityCalculations(this)">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Currency</label>
+                <select class="securityCurrency" onchange="updateSecurityCalculations(this)">
+                    <option value="CHF">CHF</option>
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                    <option value="GBP">GBP</option>
+                </select>
+            </div>
+            <div class="calculated-field">
+                <label>Value in CHF</label>
+                <span class="securityValueCHF">0.00 CHF</span>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Shareholding Percentage (%)</label>
+                <input type="number" class="shareholdingPct" step="0.01" min="0" max="100" placeholder="0.00" onchange="updateDividendMarker(this)">
+                <small class="form-note">Required for dividend taxation classification</small>
+            </div>
+            <div>
+                <label>Gross Dividend Income (CHF)</label>
+                <input type="number" class="dividendIncome" step="0.01" placeholder="0.00" onchange="calculateSecuritiesTotals()">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label>Federal Withholding Tax 35%</label>
+                <input type="number" class="federalWithholding" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label>Foreign Withholding Tax</label>
+                <input type="number" class="foreignWithholding" step="0.01" placeholder="0.00">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.securities-controls {
+    margin: 20px 0;
+    text-align: right;
+}
+
+.securities-controls .btn {
+    margin-left: 10px;
+}
+
+.security-item {
+    margin: 20px 0;
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+}
+
+.security-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.security-title {
+    font-weight: bold;
+    color: #1e3c72;
+    font-size: 1.1em;
+}
+
+.security-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dividend-marker {
+    display: none;
+    background: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.dividend-marker.visible {
+    display: inline-block;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-small:hover {
+    background: #c82333;
+}
+
+.total-row {
+    border-top: 2px solid #1e3c72;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #1e3c72;
+}
+</style>
+
+<script>
+let securitiesCount = 0;
+const exchangeRates = {
+    'EUR': 0.96,
+    'USD': 0.89,
+    'GBP': 1.12,
+    'CHF': 1.0
+};
+
+function addSecurity() {
+    securitiesCount++;
+    const template = document.getElementById('securityTemplate');
+    const newSecurity = template.cloneNode(true);
+    newSecurity.id = '';
+    newSecurity.style.display = 'block';
+    
+    // Update security number
+    newSecurity.querySelector('.security-number').textContent = securitiesCount;
+    
+    // Add to list
+    document.getElementById('securitiesList').appendChild(newSecurity);
+    
+    calculateSecuritiesTotals();
+}
+
+function removeSecurity(btn) {
+    btn.closest('.security-item').remove();
+    calculateSecuritiesTotals();
+}
+
+function updateSecurityCalculations(element) {
+    const securityItem = element.closest('.security-item');
+    const quantity = parseFloat(securityItem.querySelector('.securityQuantity').value) || 0;
+    const price = parseFloat(securityItem.querySelector('.securityPrice').value) || 0;
+    const currency = securityItem.querySelector('.securityCurrency').value;
+    
+    const valueOriginal = quantity * price;
+    const valueCHF = valueOriginal * (exchangeRates[currency] || 1);
+    
+    securityItem.querySelector('.securityValueCHF').textContent = valueCHF.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    calculateSecuritiesTotals();
+}
+
+function updateDividendMarker(element) {
+    const securityItem = element.closest('.security-item');
+    const shareholdingPct = parseFloat(element.value) || 0;
+    const dividendMarker = securityItem.querySelector('.dividend-marker');
+    
+    if (shareholdingPct >= 10) {
+        dividendMarker.classList.add('visible');
+        dividendMarker.title = `Qualified dividend: ${shareholdingPct}% shareholding (≥10%)`;
+    } else {
+        dividendMarker.classList.remove('visible');
+    }
+}
+
+function calculateSecuritiesTotals() {
+    const securities = document.querySelectorAll('.security-item:not(#securityTemplate)');
+    let totalValue = 0;
+    let totalDividends = 0;
+    
+    securities.forEach(security => {
+        // Get value in CHF
+        const valueText = security.querySelector('.securityValueCHF').textContent;
+        const value = parseFloat(valueText.replace(/[^\d.-]/g, '')) || 0;
+        totalValue += value;
+        
+        // Get dividend income
+        const dividendIncome = parseFloat(security.querySelector('.dividendIncome').value) || 0;
+        totalDividends += dividendIncome;
+    });
+    
+    // Gaming winnings
+    const gamingWinnings = parseFloat(document.getElementById('gamingWinnings').value) || 0;
+    
+    // Update totals
+    document.getElementById('totalSecuritiesValue').textContent = totalValue.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalDividendIncome').textContent = totalDividends.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('totalGamingWinnings').textContent = gamingWinnings.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    document.getElementById('grandTotalSecurities').textContent = (totalValue + gamingWinnings).toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+    
+    return {
+        totalValue,
+        totalDividends,
+        gamingWinnings,
+        grandTotal: totalValue + gamingWinnings
+    };
+}
+
+function showImportModal() {
+    alert('Bank import functionality would connect to Swiss bank e-tax systems (AKB, PostFinance, etc.) for automatic data import. This would be implemented in a production version.');
+}
+
+// Initialize with one security for demonstration
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('securities')) {
+        addSecurity();
+    }
+});
+</script>

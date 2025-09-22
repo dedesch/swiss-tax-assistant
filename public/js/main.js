@@ -1,7 +1,7 @@
 // Main application initialization and tab management
 class TaxAssistantApp {
     constructor() {
-        this.currentTab = 'overview';
+        this.currentTab = 'landing';
         this.exchangeRates = {
             USD: 0.89,
             EUR: 0.96,
@@ -19,33 +19,74 @@ class TaxAssistantApp {
         window.formsManager = new FormsManager();
         window.calculationEngine = new CalculationEngine();
         
-        // Load initial tab content
-        await this.loadTabContent('overview');
+        // Expose methods globally for component HTML onclick handlers
+        window.updateProgress = this.updateProgress.bind(this);
         
         // Setup initial calculations and progress
         this.updateProgress();
         
         console.log('Swiss Tax Assistant initialized successfully');
+        
+        // Load initial tab content after everything else is ready
+        setTimeout(() => {
+            this.loadTabContent('overview').catch(error => {
+                console.warn('Initial overview load failed, showing fallback content');
+                this.createTabContentInline('overview');
+            });
+        }, 200);
     }
 
     // Load tab content dynamically
     async loadTabContent(tabName) {
         try {
-            const response = await fetch(`components/${tabName}.html`);
+            const mainContent = document.getElementById('mainContent');
+            if (!mainContent) {
+                console.error('MainContent element not found, retrying in 100ms...');
+                setTimeout(() => this.loadTabContent(tabName), 100);
+                return;
+            }
+
+            const response = await fetch(`/components/${tabName}.html`);
             if (response.ok) {
                 const content = await response.text();
-                document.getElementById('mainContent').innerHTML = content;
+                mainContent.innerHTML = content;
                 
-                // Reinitialize form handlers for the new content
-                window.formsManager.initializeFormHandlers();
-                window.calculationEngine.calculateTotals();
+                // Note: Component scripts are handled by centralized managers instead of eval
+                
+                // Reinitialize form handlers for the new content with error handling
+                try {
+                    if (window.formsManager) {
+                        window.formsManager.initializeFormHandlers();
+                    }
+                } catch (error) {
+                    console.warn(`Forms manager initialization failed for ${tabName}:`, error);
+                }
+                
+                try {
+                    // Skip calculations for marketing tabs
+                    if (window.calculationEngine && tabName !== 'landing' && tabName !== 'pricing') {
+                        window.calculationEngine.calculateTotals();
+                        
+                        // Update quick summary if on calculate tab
+                        if (tabName === 'calculate') {
+                            setTimeout(() => window.calculationEngine.updateQuickSummary(), 100);
+                        }
+                    }
+                } catch (error) {
+                    console.warn(`Calculation engine failed for ${tabName}:`, error);
+                }
                 this.updateProgress();
+                
+                // Tab-specific initialization
+                if (tabName === 'document-upload') {
+                    setTimeout(() => this.initDocumentUploadHandlers(), 100);
+                }
                 
                 // Update active tab in navigation
                 this.updateActiveTab(tabName);
                 this.currentTab = tabName;
             } else {
-                // Fallback: create tab content inline if component files don't exist
+                console.warn(`Failed to load component ${tabName}.html (${response.status}), using fallback`);
                 this.createTabContentInline(tabName);
             }
         } catch (error) {
@@ -57,9 +98,28 @@ class TaxAssistantApp {
     // Create tab content inline as fallback
     createTabContentInline(tabName) {
         const content = this.getInlineTabContent(tabName);
-        document.getElementById('mainContent').innerHTML = content;
+        const mainContent = document.getElementById('mainContent');
+        if (mainContent) {
+            mainContent.innerHTML = content;
+        }
         this.updateActiveTab(tabName);
         this.currentTab = tabName;
+    }
+
+    // Component-specific initialization (removed eval for security)
+    initializeComponentSpecificLogic(tabName) {
+        // Handle any component-specific initialization without eval
+        if (tabName === 'calculate' && window.calculationEngine) {
+            // Initialize calculate tab specific features
+            setTimeout(() => {
+                if (window.calculationEngine.updateQuickSummary) {
+                    window.calculationEngine.updateQuickSummary();
+                }
+            }, 100);
+        } else if (tabName === 'document-upload') {
+            // Initialize document upload handlers
+            this.initDocumentUploadHandlers();
+        }
     }
 
     // Update active tab styling
@@ -68,16 +128,30 @@ class TaxAssistantApp {
             tab.classList.remove('active');
         });
         
-        event?.target?.classList.add('active');
+        // Find the tab button by onclick attribute or text content
+        const targetTab = Array.from(document.querySelectorAll('.nav-tab')).find(tab => {
+            return tab.getAttribute('onclick')?.includes(`'${tabName}'`);
+        });
+        
+        if (targetTab) {
+            targetTab.classList.add('active');
+        }
     }
 
     // Get inline content for tabs (fallback)
     getInlineTabContent(tabName) {
         const contents = {
+            landing: this.getLandingFallbackContent(),
+            pricing: this.getPricingFallbackContent(),
             overview: this.getOverviewContent(),
-            assets: this.getAssetsContent(),
+            'main-declaration': this.getMainDeclarationContent(),
+            securities: this.getSecuritiesContent(),
             properties: this.getPropertiesContent(),
+            'property-maintenance': this.getPropertyMaintenanceContent(),
+            'professional-costs': this.getProfessionalCostsContent(),
             debts: this.getDebtsContent(),
+            pensions: this.getPensionsContent(),
+            'document-upload': this.getFallbackDocumentUploadContent(),
             calculate: this.getCalculateContent()
         };
         
@@ -144,6 +218,39 @@ class TaxAssistantApp {
     }
 
     // Progress tracking
+    // Initialize document upload handlers
+    initDocumentUploadHandlers() {
+        if (window.documentUploadManager) {
+            window.documentUploadManager.initializeUploadInterface();
+        }
+        
+        // Make sure global handlers are available
+        if (!window.applyExtractedData) {
+            window.applyExtractedData = function() {
+                if (window.documentUploadManager && window.documentUploadManager.currentExtractionResults) {
+                    window.documentUploadManager.applyDataToForms();
+                }
+            };
+        }
+        
+        if (!window.reviewData) {
+            window.reviewData = function() {
+                if (window.documentUploadManager && window.documentUploadManager.currentExtractionResults) {
+                    window.documentUploadManager.showReviewModal();
+                }
+            };
+        }
+        
+        if (!window.clearResults) {
+            window.clearResults = function() {
+                if (window.documentUploadManager) {
+                    window.documentUploadManager.resetInterface();
+                    showNotification('Results cleared', 'info');
+                }
+            };
+        }
+    }
+
     updateProgress() {
         const fields = [
             'firstName', 'lastName', 'address', 'bankAccountsCHF', 'stockValueUSD',
@@ -167,34 +274,48 @@ class TaxAssistantApp {
     }
 
     // Get assets content (simplified for fallback)
-    getAssetsContent() {
+    // Swiss tax form method stubs (fallback content)
+    getMainDeclarationContent() {
         return `
             <div class="form-section">
-                <h3>Securities & Bank Accounts</h3>
-                <div class="translation-help">Wertschriften und Guthaben - Securities and Credit Balances</div>
-                
-                <div class="form-group">
-                    <div>
-                        <label>Total Bank Accounts (CHF)</label>
-                        <input type="number" id="bankAccountsCHF" step="0.01" onchange="calculateTotals()">
-                    </div>
-                    <div>
-                        <label>Stock Holdings Value (USD)</label>
-                        <input type="number" id="stockValueUSD" step="0.01" onchange="calculateTotals()">
-                        <div class="chf-equivalent" id="stockCHFEquivalent">CHF: 0.00</div>
-                    </div>
-                </div>
+                <h3>Steuererklärung - Main Tax Declaration</h3>
+                <p>Please use the main declaration component for detailed entry. This is a fallback view.</p>
+            </div>
+        `;
+    }
 
-                <div class="form-group">
-                    <div>
-                        <label>Pillar 3a Value (CHF)</label>
-                        <input type="number" id="pillar3a" step="0.01" onchange="calculateTotals()">
-                    </div>
-                    <div>
-                        <label>Vehicle Value (CHF)</label>
-                        <input type="number" id="vehicleValue" step="0.01" onchange="calculateTotals()">
-                    </div>
-                </div>
+    getSecuritiesContent() {
+        return `
+            <div class="form-section">
+                <h3>Wertschriften - Securities Register</h3>
+                <p>Please use the securities component for detailed entry. This is a fallback view.</p>
+            </div>
+        `;
+    }
+
+    getPropertyMaintenanceContent() {
+        return `
+            <div class="form-section">
+                <h3>Liegenschaftsunterhalt - Property Maintenance</h3>
+                <p>Please use the property maintenance component for detailed entry. This is a fallback view.</p>
+            </div>
+        `;
+    }
+
+    getProfessionalCostsContent() {
+        return `
+            <div class="form-section">
+                <h3>Berufskosten - Professional Costs</h3>
+                <p>Please use the professional costs component for detailed entry. This is a fallback view.</p>
+            </div>
+        `;
+    }
+
+    getPensionsContent() {
+        return `
+            <div class="form-section">
+                <h3>Renten und Ersatzeinkünfte - Pensions & Benefits</h3>
+                <p>Please use the pensions component for detailed entry. This is a fallback view.</p>
             </div>
         `;
     }
@@ -235,6 +356,59 @@ class TaxAssistantApp {
         `;
     }
 
+    getDocumentUploadContent() {
+        // Load the document upload component
+        return this.loadComponentFile('document-upload');
+    }
+
+    getLandingFallbackContent() {
+        return `
+            <div class="form-section">
+                <h1>Swiss Tax Assistant</h1>
+                <p>AI-Powered Tax Declaration for Canton Aargau</p>
+                <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                    <strong>Component Loading Error:</strong> The landing page could not be loaded. 
+                    Please refresh the page or contact support if this issue persists.
+                </div>
+                <div style="text-align: center; margin: 30px 0;">
+                    <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                </div>
+            </div>
+        `;
+    }
+
+    getPricingFallbackContent() {
+        return `
+            <div class="form-section">
+                <h2>Pricing Plans</h2>
+                <p>Choose the plan that's right for you</p>
+                <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                    <strong>Component Loading Error:</strong> The pricing page could not be loaded. 
+                    Please refresh the page or contact support if this issue persists.
+                </div>
+                <div style="text-align: center; margin: 30px 0;">
+                    <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                </div>
+            </div>
+        `;
+    }
+
+    getFallbackDocumentUploadContent() {
+        return `
+            <div class="form-section">
+                <h3>📄 Document Upload & Auto-Fill</h3>
+                <p>Upload your Swiss tax documents to automatically extract and pre-fill relevant information.</p>
+                <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                    <strong>Component Loading Error:</strong> The document upload interface could not be loaded. 
+                    Please refresh the page or contact support if this issue persists.
+                </div>
+                <div style="text-align: center; margin: 30px 0;">
+                    <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                </div>
+            </div>
+        `;
+    }
+
     getCalculateContent() {
         return `
             <div class="form-section">
@@ -259,8 +433,13 @@ async function showTab(tabName) {
 }
 
 function updateProgress() {
-    window.taxApp.updateProgress();
+    if (window.taxApp) {
+        window.taxApp.updateProgress();
+    }
 }
+
+// Ensure global function bindings are available
+window.updateProgress = updateProgress;
 
 function calculateTotals() {
     if (window.calculationEngine) {
@@ -312,5 +491,16 @@ function showNotification(message, type = 'info') {
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    window.taxApp = new TaxAssistantApp();
+    // Wait for DOM to be fully ready and all elements to exist
+    function waitForElement() {
+        const mainContent = document.getElementById('mainContent');
+        if (mainContent) {
+            window.taxApp = new TaxAssistantApp();
+        } else {
+            setTimeout(waitForElement, 50);
+        }
+    }
+    
+    // Add a small delay to ensure all DOM parsing is complete
+    setTimeout(waitForElement, 100);
 });

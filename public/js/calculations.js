@@ -1,23 +1,164 @@
-// Tax calculation engine for Swiss tax calculations
+// Swiss Tax Calculation Engine - Canton Aargau 2024/2025
 class CalculationEngine {
     constructor() {
+        // ESTV official exchange rates (Dec 31, 2024)
         this.exchangeRates = {
             USD: 0.89,
             EUR: 0.96,
-            GBP: 1.12
+            GBP: 1.12,
+            CHF: 1.0
+        };
+
+        // Swiss tax constants (2024/2025)
+        this.swissConstants = {
+            // Insurance premium deduction limits
+            insuranceDeductionSingle: 3400,
+            insuranceDeductionJoint: 6800,
+            
+            // Property constants
+            imputedRentRate: 0.62, // 62% of market rent (2025 update)
+            
+            // Professional costs
+            standardMealAllowance: 15.00, // CHF per day
+            standardVehicleRate: 0.70, // CHF per km
+            
+            // Gaming winnings threshold
+            gamingWinningsThreshold: 1000000, // CHF 1 million
+            
+            // Child deduction
+            childDeductionUnder18: 6400, // CHF per child
+            
+            // Dividend qualification threshold
+            qualifiedDividendThreshold: 10 // 10% shareholding for "D" marking
         };
     }
 
-    // Calculate all CHF equivalents and totals
+    // Calculate all CHF equivalents and totals with Swiss tax validation
     calculateTotals() {
         this.updateStockEquivalents();
         this.updateForeignMortgageEquivalents();
         this.updateForeignPropertyEquivalents();
         this.updateDividendEquivalents();
         
+        // Apply Swiss tax business rules
+        this.validateSwissTaxRules();
+        
+        // Calculate Swiss tax forms if present
+        this.calculateSwissFormsIfPresent();
+        
         // Update progress after calculations
         if (window.taxApp) {
             window.taxApp.updateProgress();
+        }
+    }
+
+    // Apply Swiss tax business rules and validation
+    validateSwissTaxRules() {
+        this.validateInsuranceDeductions();
+        this.validateGamingWinnings();
+        this.updateQualifiedDividends();
+    }
+
+    // Validate insurance premium deductions
+    validateInsuranceDeductions() {
+        const insuranceField = document.getElementById('insurancePremiums');
+        if (!insuranceField) return;
+        
+        const filingStatus = document.getElementById('filingStatus')?.value || 'single';
+        const maxAllowed = filingStatus === 'married' ? 
+            this.swissConstants.insuranceDeductionJoint : 
+            this.swissConstants.insuranceDeductionSingle;
+        
+        const currentValue = parseFloat(insuranceField.value) || 0;
+        
+        if (currentValue > maxAllowed) {
+            insuranceField.style.borderColor = '#ff4444';
+            this.showValidationError(`Insurance premium deduction cannot exceed CHF ${maxAllowed.toLocaleString()} for ${filingStatus} filing status.`);
+            insuranceField.value = maxAllowed;
+        } else {
+            insuranceField.style.borderColor = '';
+        }
+    }
+
+    // Validate gaming winnings threshold
+    validateGamingWinnings() {
+        const gamingField = document.getElementById('gamingWinnings');
+        if (!gamingField) return;
+        
+        const gamingAmount = parseFloat(gamingField.value) || 0;
+        
+        if (gamingAmount > 0 && gamingAmount < this.swissConstants.gamingWinningsThreshold) {
+            this.showValidationWarning(`Gaming winnings under CHF ${this.swissConstants.gamingWinningsThreshold.toLocaleString()} are not taxable. Consider removing this entry.`);
+        }
+    }
+
+    // Update qualified dividends with "D" marking
+    updateQualifiedDividends() {
+        document.querySelectorAll('.shareholdingPct').forEach(shareholdingInput => {
+            const shareholding = parseFloat(shareholdingInput.value) || 0;
+            const securityItem = shareholdingInput.closest('.security-item');
+            if (!securityItem) return;
+            
+            const dividendMarker = securityItem.querySelector('.dividend-marker');
+            if (!dividendMarker) return;
+            
+            if (shareholding >= this.swissConstants.qualifiedDividendThreshold) {
+                dividendMarker.classList.add('visible');
+                dividendMarker.title = `Qualified dividend: ${shareholding}% shareholding (≥10%)`;
+            } else {
+                dividendMarker.classList.remove('visible');
+            }
+        });
+    }
+
+    // Calculate Swiss forms if present
+    calculateSwissFormsIfPresent() {
+        // Main declaration calculations
+        if (typeof calculateMainDeclarationTotals === 'function') {
+            calculateMainDeclarationTotals();
+        }
+        
+        // Securities calculations
+        if (typeof calculateSecuritiesTotals === 'function') {
+            calculateSecuritiesTotals();
+        }
+        
+        // Properties calculations
+        if (typeof calculatePropertiesTotals === 'function') {
+            calculatePropertiesTotals();
+        }
+        
+        // Professional costs calculations
+        if (typeof calculateProfessionalTotals === 'function') {
+            calculateProfessionalTotals();
+        }
+        
+        // Debts calculations
+        if (typeof calculateDebtsTotals === 'function') {
+            calculateDebtsTotals();
+        }
+        
+        // Pensions calculations
+        if (typeof calculatePensionsTotals === 'function') {
+            calculatePensionsTotals();
+        }
+    }
+
+    // Show validation error
+    showValidationError(message) {
+        if (typeof showNotification === 'function') {
+            showNotification(message, 'error');
+        } else {
+            alert(message);
+        }
+    }
+
+    // Show validation warning
+    showValidationWarning(message) {
+        if (typeof showNotification === 'function') {
+            showNotification(message, 'warning');
+        } else {
+            console.warn(message);
         }
     }
 
@@ -329,6 +470,20 @@ class CalculationEngine {
         });
 
         return data;
+    }
+
+    // Update quick summary in calculate tab
+    updateQuickSummary() {
+        const data = this.gatherAllData();
+        const totals = this.calculateAllTotals(data);
+        
+        const quickTotalAssets = document.getElementById('quickTotalAssets');
+        const quickTotalDebts = document.getElementById('quickTotalDebts');
+        const quickNetWealth = document.getElementById('quickNetWealth');
+        
+        if (quickTotalAssets) quickTotalAssets.textContent = totals.totalAssets.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+        if (quickTotalDebts) quickTotalDebts.textContent = totals.totalDebts.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
+        if (quickNetWealth) quickNetWealth.textContent = totals.netWealth.toLocaleString('de-CH', {minimumFractionDigits: 2}) + ' CHF';
     }
 
     // Generate PDF with complete calculation data

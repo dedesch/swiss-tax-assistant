@@ -1,0 +1,418 @@
+<div id="document-upload" class="tab-content">
+    <div class="form-section">
+        <h3>📄 Document Upload & Auto-Fill</h3>
+        <p>Upload your documents (salary statements, bank statements, insurance documents) to automatically extract and pre-fill relevant tax information.</p>
+        
+        <!-- Upload Area -->
+        <div class="upload-section">
+            <div class="upload-dropzone" id="uploadDropzone">
+                <div class="upload-icon">📁</div>
+                <h4>Drag & Drop Documents Here</h4>
+                <p>or <button class="btn btn-link" onclick="document.getElementById('fileInput').click()">browse files</button></p>
+                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                <div class="upload-info">
+                    <small>Supported: JPG, PNG, GIF, WebP • Max size: 10MB per file<br>
+                    <strong>Note:</strong> PDF processing not yet supported - please upload screenshots of your PDF documents</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Processing Status -->
+        <div class="processing-status" id="processingStatus" style="display: none;">
+            <div class="processing-spinner"></div>
+            <p>Processing document... Please wait</p>
+        </div>
+
+        <!-- Upload Queue -->
+        <div class="upload-queue" id="uploadQueue" style="display: none;">
+            <h4>Upload Queue</h4>
+            <div class="queue-list" id="queueList">
+                <!-- Queue items will be added here -->
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="extraction-results" id="extractionResults" style="display: none;">
+            <h4>📊 Extracted Information</h4>
+            <div class="document-info" id="documentInfo">
+                <!-- Document type and confidence will be shown here -->
+            </div>
+            
+            <div class="extracted-data" id="extractedData">
+                <!-- Extracted fields will be shown here -->
+            </div>
+            
+            <div class="field-mapping" id="fieldMapping">
+                <!-- Tax form field mapping will be shown here -->
+            </div>
+            
+            <div class="suggestions" id="suggestions">
+                <!-- AI suggestions will be shown here -->
+            </div>
+            
+            <div class="action-buttons" style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-success" onclick="applyExtractedData()" id="applyBtn" disabled>
+                    ✅ Apply to Tax Forms
+                </button>
+                <button class="btn btn-secondary" onclick="reviewData()" id="reviewBtn" disabled>
+                    👁️ Review & Edit
+                </button>
+                <button class="btn btn-warning" onclick="clearResults()">
+                    🗑️ Clear Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Section -->
+    <div class="form-section">
+        <h4>📋 Processing History</h4>
+        <div class="processing-history" id="processingHistory">
+            <p class="text-muted">No documents processed yet. Upload your first document above!</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-section {
+    margin: 30px 0;
+}
+
+.upload-dropzone {
+    border: 3px dashed #1e3c72;
+    border-radius: 15px;
+    padding: 40px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-dropzone:hover {
+    border-color: #2a5298;
+    background: linear-gradient(135deg, #e8f4f8, #d1ecf1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(30, 60, 114, 0.1);
+}
+
+.upload-dropzone.dragover {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    transform: scale(1.02);
+}
+
+.upload-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+    color: #1e3c72;
+}
+
+.upload-dropzone h4 {
+    color: #1e3c72;
+    margin: 15px 0;
+}
+
+.upload-dropzone p {
+    color: #6c757d;
+    margin: 10px 0;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #1e3c72;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-link:hover {
+    color: #2a5298;
+}
+
+.upload-info {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.processing-status {
+    text-align: center;
+    padding: 30px;
+    background: #e8f4f8;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.processing-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #e8f4f8;
+    border-top: 5px solid #1e3c72;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.upload-queue {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.queue-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    margin: 10px 0;
+    border: 1px solid #e0e0e0;
+}
+
+.queue-item .file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.queue-item .file-icon {
+    font-size: 1.5em;
+}
+
+.queue-item .file-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.queue-item .file-name {
+    font-weight: bold;
+    color: #1e3c72;
+}
+
+.queue-item .file-size {
+    font-size: 0.8em;
+    color: #6c757d;
+}
+
+.queue-item .status {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.status.processing {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status.completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.extraction-results {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 0;
+    border: 2px solid #1e3c72;
+}
+
+.document-info {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    border-left: 4px solid #1e3c72;
+}
+
+.confidence-bar {
+    width: 100%;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #dc3545, #ffc107, #28a745);
+    transition: width 0.5s ease;
+}
+
+.extracted-data {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.field-group {
+    margin: 15px 0;
+}
+
+.field-group h5 {
+    color: #1e3c72;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.extracted-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.field-label {
+    font-weight: bold;
+    color: #495057;
+}
+
+.field-value {
+    color: #1e3c72;
+    font-family: monospace;
+}
+
+.field-mapping {
+    background: #e8f4f8;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.mapping-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    margin: 8px 0;
+    border-left: 4px solid #28a745;
+}
+
+.mapping-arrow {
+    color: #6c757d;
+    font-size: 1.2em;
+}
+
+.suggestions {
+    background: #fff3cd;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+    border-left: 4px solid #ffc107;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 10px 0;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+}
+
+.suggestion-icon {
+    color: #ffc107;
+    font-size: 1.2em;
+    margin-top: 2px;
+}
+
+.processing-history {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    margin: 10px 0;
+    border: 1px solid #e0e0e0;
+}
+
+.history-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.history-filename {
+    font-weight: bold;
+    color: #1e3c72;
+}
+
+.history-details {
+    font-size: 0.8em;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+.history-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 0.8em;
+    border-radius: 4px;
+}
+
+.text-muted {
+    color: #6c757d;
+    text-align: center;
+    padding: 30px;
+    font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .upload-dropzone {
+        padding: 30px 15px;
+    }
+    
+    .queue-item, .mapping-item, .history-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .extraction-results {
+        padding: 15px;
+    }
+}
+</style>
+
+<script>
+// Document upload functionality will be handled by main upload manager
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('document-upload') && window.documentUploadManager) {
+        window.documentUploadManager.initializeUploadInterface();
+    }
+});
+</script>

@@ -1,0 +1,165 @@
+<div id="calculate" class="tab-content">
+    <div class="form-section">
+        <h3>Tax Calculation Summary & Report Generation</h3>
+        <p>Review your complete tax situation and generate comprehensive reports for submission to Swiss tax authorities.</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="btn btn-primary" onclick="generateReport()" style="margin: 10px;">📊 Generate Complete Report</button>
+            <button class="btn btn-warning" onclick="downloadPDF()" style="margin: 10px;">📄 Download PDF Report</button>
+            <button class="btn btn-success" onclick="saveProgress()" style="margin: 10px;">💾 Save Final Results</button>
+        </div>
+    </div>
+
+    <!-- Results Panel (initially hidden) -->
+    <div class="results-panel" id="resultsPanel" style="display: none;">
+        <div class="form-section">
+            <h4>Wealth Declaration Summary</h4>
+            <div id="wealthSummary" class="calculation-summary">
+                <!-- Wealth summary will be populated here -->
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h4>Asset Classification</h4>
+            <div id="assetClassification">
+                <!-- Asset classification table will be populated here -->
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h4>Debt Classification</h4>
+            <div id="debtClassification">
+                <!-- Debt classification table will be populated here -->
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h4>Required Tax Forms</h4>
+            <div id="formsRequired">
+                <!-- Required forms list will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Summary Panel -->
+    <div class="form-section">
+        <h4>Quick Overview</h4>
+        <div class="quick-summary">
+            <div class="summary-card">
+                <div class="summary-label">Total Assets</div>
+                <div class="summary-value" id="quickTotalAssets">0.00 CHF</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Total Debts</div>
+                <div class="summary-value" id="quickTotalDebts">0.00 CHF</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Net Wealth</div>
+                <div class="summary-value" id="quickNetWealth">0.00 CHF</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info">
+        <strong>Tax Submission Guidelines:</strong> Use the generated PDF report as supporting documentation for your Swiss tax declaration. The system automatically classifies assets and debts according to Canton Aargau requirements and applies current ESTV exchange rates.
+    </div>
+</div>
+
+<style>
+.results-panel {
+    border: 2px solid #1e3c72;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    background: #f8f9fa;
+}
+
+.calculation-summary {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.calculation-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.calculation-row:last-child {
+    border-bottom: 2px solid #1e3c72;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #1e3c72;
+}
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.summary-table th,
+.summary-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.summary-table th {
+    background: #1e3c72;
+    color: white;
+    font-weight: bold;
+}
+
+.summary-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.quick-summary {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.summary-card {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    min-width: 150px;
+    flex: 1;
+    max-width: 200px;
+}
+
+.summary-label {
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+
+.summary-value {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.warning {
+    background: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+    margin: 15px 0;
+}
+</style>
+
