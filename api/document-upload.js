@@ -2,6 +2,7 @@
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import DocumentProcessor from '../lib/document-processor.js';
+import { createTables } from '../lib/supabase.js';
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();

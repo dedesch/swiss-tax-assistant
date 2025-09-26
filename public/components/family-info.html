@@ -1,0 +1,361 @@
+<div id="family-info" class="tab-content">
+    <div class="form-section">
+        <h3>Family Information - Familieninformationen</h3>
+        <p>Complete family details for married filing and dependent information.</p>
+        
+        <!-- Family Status Check -->
+        <div class="form-subsection" id="familyStatusCheck">
+            <div class="info-banner bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                <p class="text-blue-700">
+                    <strong>Note:</strong> This section is automatically populated based on your filing status in the main declaration. 
+                    Family information is required only for married filers with children.
+                </p>
+            </div>
+        </div>
+
+        <!-- Spouse Information -->
+        <div class="form-subsection" id="spouseInfoSection" style="display: none;">
+            <h4>Spouse Information - Ehepartner Informationen</h4>
+            <div class="form-group">
+                <div>
+                    <label>Spouse First Name - Vorname</label>
+                    <input type="text" id="detailedSpouseFirstName" placeholder="First name" onchange="updateProgress()">
+                </div>
+                <div>
+                    <label>Spouse Last Name - Nachname</label>
+                    <input type="text" id="detailedSpouseLastName" placeholder="Last name" onchange="updateProgress()">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Date of Birth - Geburtsdatum</label>
+                    <input type="date" id="spouseDateOfBirth" onchange="updateProgress()">
+                </div>
+                <div>
+                    <label>Place of Birth - Geburtsort</label>
+                    <input type="text" id="spousePlaceOfBirth" placeholder="City, Country" onchange="updateProgress()">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Nationality - Nationalität</label>
+                    <input type="text" id="spouseNationality" placeholder="Swiss, German, etc." onchange="updateProgress()">
+                </div>
+                <div>
+                    <label>Employment Status - Beschäftigungsstatus</label>
+                    <select id="spouseEmploymentStatus" onchange="updateProgress()">
+                        <option value="">Select status</option>
+                        <option value="employed">Employed - Angestellt</option>
+                        <option value="self-employed">Self-employed - Selbständig</option>
+                        <option value="unemployed">Unemployed - Arbeitslos</option>
+                        <option value="retired">Retired - Rentner</option>
+                        <option value="student">Student - Student</option>
+                        <option value="homemaker">Homemaker - Hausfrau/Hausmann</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Annual Income (CHF) - Jahreseinkommen</label>
+                    <input type="number" id="spouseIncome" step="0.01" placeholder="0.00" onchange="updateProgress()">
+                </div>
+                <div>
+                    <label>AHV Number - AHV Nummer</label>
+                    <input type="text" id="spouseAHVNumber" placeholder="756.xxxx.xxxx.xx" pattern="[0-9]{3}\.[0-9]{4}\.[0-9]{4}\.[0-9]{2}" onchange="updateProgress()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Children Information -->
+        <div class="form-subsection" id="childrenInfoSection" style="display: none;">
+            <h4>Children Information - Kinderinformationen</h4>
+            <div class="form-group">
+                <div>
+                    <label>Number of Children Under 18 - Anzahl Kinder unter 18</label>
+                    <input type="number" id="familyChildrenCount" min="0" step="1" placeholder="0" onchange="updateChildrenForms()" readonly>
+                    <small class="form-note">This value is synced from the main declaration form</small>
+                </div>
+            </div>
+            
+            <div id="childrenDetailsList" class="children-forms-container">
+                <!-- Children forms will be dynamically generated here -->
+            </div>
+        </div>
+
+        <!-- Family Summary -->
+        <div class="form-subsection">
+            <h4>Family Summary - Familienzusammenfassung</h4>
+            <div class="family-summary">
+                <div class="summary-row">
+                    <span>Filing Status:</span>
+                    <span id="summaryFilingStatus">-</span>
+                </div>
+                <div class="summary-row">
+                    <span>Spouse Information:</span>
+                    <span id="summarySpouseInfo">Not applicable</span>
+                </div>
+                <div class="summary-row">
+                    <span>Number of Children:</span>
+                    <span id="summaryChildrenCount">0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Total Family Members:</span>
+                    <span id="summaryTotalMembers">1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.children-forms-container {
+    margin-top: 20px;
+}
+
+.child-form {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.child-form h5 {
+    color: #1e3c72;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.child-form .child-number {
+    background: #1e3c72;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.family-summary {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid #1e3c72;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    padding: 5px 0;
+}
+
+.summary-row:not(:last-child) {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.info-banner {
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.form-note {
+    display: block;
+    color: #666;
+    font-style: italic;
+    margin-top: 2px;
+    font-size: 0.85em;
+}
+</style>
+
+<script>
+function updateFamilyInfo() {
+    // Get filing status and children count from main declaration
+    const filingStatus = document.getElementById('filingStatus')?.value || 'single';
+    const childrenCount = parseInt(document.getElementById('childrenUnder18')?.value || '0');
+    
+    // Update family info fields
+    const spouseInfoSection = document.getElementById('spouseInfoSection');
+    const childrenInfoSection = document.getElementById('childrenInfoSection');
+    const familyChildrenCount = document.getElementById('familyChildrenCount');
+    
+    // Show/hide spouse section based on filing status
+    if (filingStatus === 'married') {
+        spouseInfoSection.style.display = 'block';
+        
+        // Sync spouse names from main declaration if they exist
+        const mainSpouseFirstName = document.getElementById('spouseFirstName');
+        const mainSpouseLastName = document.getElementById('spouseLastName');
+        const detailedSpouseFirstName = document.getElementById('detailedSpouseFirstName');
+        const detailedSpouseLastName = document.getElementById('detailedSpouseLastName');
+        
+        if (mainSpouseFirstName && detailedSpouseFirstName && mainSpouseFirstName.value) {
+            detailedSpouseFirstName.value = mainSpouseFirstName.value;
+        }
+        if (mainSpouseLastName && detailedSpouseLastName && mainSpouseLastName.value) {
+            detailedSpouseLastName.value = mainSpouseLastName.value;
+        }
+    } else {
+        spouseInfoSection.style.display = 'none';
+    }
+    
+    // Show/hide children section and update count
+    if (childrenCount > 0) {
+        childrenInfoSection.style.display = 'block';
+        if (familyChildrenCount) {
+            familyChildrenCount.value = childrenCount;
+        }
+        updateChildrenForms();
+    } else {
+        childrenInfoSection.style.display = 'none';
+    }
+    
+    updateFamilySummary();
+}
+
+function updateChildrenForms() {
+    const childrenCount = parseInt(document.getElementById('familyChildrenCount')?.value || '0');
+    const container = document.getElementById('childrenDetailsList');
+    
+    if (!container) return;
+    
+    // Clear existing forms
+    container.innerHTML = '';
+    
+    // Create forms for each child
+    for (let i = 0; i < childrenCount; i++) {
+        const childForm = document.createElement('div');
+        childForm.className = 'child-form';
+        childForm.innerHTML = `
+            <h5>
+                Child ${i + 1} - Kind ${i + 1}
+                <span class="child-number">${i + 1}</span>
+            </h5>
+            <div class="form-group">
+                <div>
+                    <label>First Name - Vorname</label>
+                    <input type="text" id="child${i}FirstName" placeholder="First name" onchange="updateFamilySummary(); triggerProgressUpdate();">
+                </div>
+                <div>
+                    <label>Last Name - Nachname</label>
+                    <input type="text" id="child${i}LastName" placeholder="Last name" onchange="updateFamilySummary(); triggerProgressUpdate();">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Date of Birth - Geburtsdatum</label>
+                    <input type="date" id="child${i}DateOfBirth" onchange="updateFamilySummary(); triggerProgressUpdate();">
+                </div>
+                <div>
+                    <label>Place of Birth - Geburtsort</label>
+                    <input type="text" id="child${i}PlaceOfBirth" placeholder="City, Country" onchange="updateFamilySummary()">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Nationality - Nationalität</label>
+                    <input type="text" id="child${i}Nationality" placeholder="Swiss, German, etc." onchange="updateFamilySummary()">
+                </div>
+                <div>
+                    <label>School/Childcare - Schule/Betreuung</label>
+                    <input type="text" id="child${i}School" placeholder="School name or childcare" onchange="updateFamilySummary()">
+                </div>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>Special Needs - Besondere Bedürfnisse</label>
+                    <select id="child${i}SpecialNeeds" onchange="updateFamilySummary()">
+                        <option value="none">None - Keine</option>
+                        <option value="disability">Disability - Behinderung</option>
+                        <option value="medical">Medical condition - Medizinische Bedingung</option>
+                        <option value="learning">Learning difficulties - Lernschwierigkeiten</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Annual Childcare Costs (CHF) - Kinderbetreuungskosten</label>
+                    <input type="number" id="child${i}ChildcareCosts" step="0.01" placeholder="0.00" onchange="updateFamilySummary()">
+                </div>
+            </div>
+        `;
+        container.appendChild(childForm);
+    }
+}
+
+function updateFamilySummary() {
+    const filingStatus = document.getElementById('filingStatus')?.value || 'single';
+    const childrenCount = parseInt(document.getElementById('familyChildrenCount')?.value || '0');
+    
+    // Update summary displays
+    const summaryFilingStatus = document.getElementById('summaryFilingStatus');
+    const summarySpouseInfo = document.getElementById('summarySpouseInfo');
+    const summaryChildrenCount = document.getElementById('summaryChildrenCount');
+    const summaryTotalMembers = document.getElementById('summaryTotalMembers');
+    
+    if (summaryFilingStatus) {
+        summaryFilingStatus.textContent = filingStatus.charAt(0).toUpperCase() + filingStatus.slice(1);
+    }
+    
+    if (summarySpouseInfo) {
+        if (filingStatus === 'married') {
+            const spouseFirstName = document.getElementById('detailedSpouseFirstName')?.value || '';
+            const spouseLastName = document.getElementById('detailedSpouseLastName')?.value || '';
+            if (spouseFirstName && spouseLastName) {
+                summarySpouseInfo.textContent = `${spouseFirstName} ${spouseLastName}`;
+            } else {
+                summarySpouseInfo.textContent = 'Spouse information required';
+                summarySpouseInfo.style.color = '#dc3545';
+            }
+        } else {
+            summarySpouseInfo.textContent = 'Not applicable';
+            summarySpouseInfo.style.color = '';
+        }
+    }
+    
+    if (summaryChildrenCount) {
+        summaryChildrenCount.textContent = childrenCount.toString();
+    }
+    
+    if (summaryTotalMembers) {
+        let totalMembers = 1; // Self
+        if (filingStatus === 'married') totalMembers += 1; // Spouse
+        totalMembers += childrenCount; // Children
+        summaryTotalMembers.textContent = totalMembers.toString();
+    }
+    
+    // Trigger progress update
+    triggerProgressUpdate();
+}
+
+function triggerProgressUpdate() {
+    if (window.app && window.app.updateProgress) {
+        window.app.updateProgress();
+    }
+}
+
+// Initialize when family info tab is loaded
+function initializeFamilyInfo() {
+    updateFamilyInfo();
+    
+    // Set up sync with main declaration form
+    const filingStatusField = document.getElementById('filingStatus');
+    const childrenField = document.getElementById('childrenUnder18');
+    
+    if (filingStatusField) {
+        filingStatusField.addEventListener('change', updateFamilyInfo);
+    }
+    
+    if (childrenField) {
+        childrenField.addEventListener('change', updateFamilyInfo);
+    }
+}
+
+// Auto-initialize if elements are available
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFamilyInfo);
+} else {
+    // If the page is already loaded, initialize immediately
+    setTimeout(initializeFamilyInfo, 100);
+}
+</script>

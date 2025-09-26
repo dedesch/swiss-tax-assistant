@@ -105,7 +105,7 @@
             <div class="form-group">
                 <div>
                     <label>Children (under 18)</label>
-                    <input type="number" id="childrenUnder18" min="0" step="1" placeholder="0" onchange="calculateTotals()">
+                    <input type="number" id="childrenUnder18" min="0" step="1" placeholder="0" onchange="calculateTotals(); syncWithFamilyForm();">
                 </div>
                 <div class="calculated-field">
                     <label>Total Deductions</label>
@@ -206,6 +206,41 @@ function updateFilingStatus() {
     }
     
     validateInsuranceDeduction();
+    syncWithFamilyForm();
+    
+    // Update progress when filing status changes
+    if (window.app && window.app.updateProgress) {
+        window.app.updateProgress();
+    }
+}
+
+function syncWithFamilyForm() {
+    // Sync data with family information form
+    if (typeof updateFamilyInfo === 'function') {
+        updateFamilyInfo();
+    }
+    
+    // Sync spouse names between main declaration and family form
+    const spouseFirstName = document.getElementById('spouseFirstName');
+    const spouseLastName = document.getElementById('spouseLastName');
+    const detailedSpouseFirstName = document.getElementById('detailedSpouseFirstName');
+    const detailedSpouseLastName = document.getElementById('detailedSpouseLastName');
+    
+    if (spouseFirstName && detailedSpouseFirstName) {
+        if (spouseFirstName.value && !detailedSpouseFirstName.value) {
+            detailedSpouseFirstName.value = spouseFirstName.value;
+        } else if (detailedSpouseFirstName.value && !spouseFirstName.value) {
+            spouseFirstName.value = detailedSpouseFirstName.value;
+        }
+    }
+    
+    if (spouseLastName && detailedSpouseLastName) {
+        if (spouseLastName.value && !detailedSpouseLastName.value) {
+            detailedSpouseLastName.value = spouseLastName.value;
+        } else if (detailedSpouseLastName.value && !spouseLastName.value) {
+            spouseLastName.value = detailedSpouseLastName.value;
+        }
+    }
 }
 
 function validateInsuranceDeduction() {

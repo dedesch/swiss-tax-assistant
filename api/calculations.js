@@ -1,6 +1,6 @@
 // Vercel serverless function for tax calculations
 import jwt from 'jsonwebtoken';
-import { saveCalculation, getCalculation } from '../lib/db.js';
+import { saveCalculation, getCalculation } from '../lib/supabase.js';
 
 export default async function handler(req, res) {
     // Enable CORS

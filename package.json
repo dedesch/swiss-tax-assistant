@@ -11,6 +11,7 @@
         "deploy": "vercel --prod"
     },
     "dependencies": {
+        "@supabase/supabase-js": "^2.58.0",
         "bcryptjs": "^2.4.3",
         "cors": "^2.8.5",
         "express": "^5.1.0",
@@ -19,7 +20,6 @@
         "jspdf-autotable": "^3.6.0",
         "multer": "^2.0.2",
         "openai": "^5.22.0",
-        "pg": "^8.16.3",
         "playwright-aws-lambda": "^0.10.0"
     },
     "devDependencies": {

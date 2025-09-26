@@ -1,5 +1,6 @@
 // Vercel serverless function for PDF report generation
 import jwt from 'jsonwebtoken';
+import { createTables } from '../lib/supabase.js';
 
 export default async function handler(req, res) {
     // Enable CORS

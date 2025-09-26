@@ -280,25 +280,197 @@ class TaxAssistantApp {
     }
 
     updateProgress() {
-        const fields = [
-            'firstName', 'lastName', 'address', 'bankAccountsCHF', 'stockValueUSD',
-            'swissAddress', 'swissTaxValue', 'swissMortgage'
-        ];
-        
-        let filledFields = 0;
-        fields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            if (field && field.value.trim() !== '') {
-                filledFields++;
+        // Define sections and their completion criteria
+        const sections = {
+            'main-declaration': {
+                name: 'Personal Info & Income',
+                requiredFields: ['firstName', 'lastName', 'employmentIncome', 'filingStatus'],
+                weight: 30
+            },
+            'securities': {
+                name: 'Securities', 
+                requiredFields: ['bankAccountsCHF'],
+                weight: 20
+            },
+            'properties': {
+                name: 'Properties',
+                requiredFields: ['swissAddress', 'swissTaxValue'],
+                weight: 20
+            },
+            'debts': {
+                name: 'Debts',
+                requiredFields: ['swissMortgage'],
+                weight: 15
+            },
+            'family-info': {
+                name: 'Family Information',
+                requiredFields: [],
+                weight: 15
             }
-        });
+        };
 
-        const progress = (filledFields / fields.length) * 100;
+        let totalProgress = 0;
+        let completedSections = 0;
+
+        // Calculate section completion
+        for (const [sectionId, section] of Object.entries(sections)) {
+            let sectionComplete = this.checkSectionCompletion(sectionId, section);
+            
+            if (sectionComplete) {
+                totalProgress += section.weight;
+                completedSections++;
+            }
+        }
+
+        // Update progress bar and text
         const progressBar = document.getElementById('progressBar');
         const progressText = document.getElementById('progressText');
         
-        if (progressBar) progressBar.style.width = progress + '%';
-        if (progressText) progressText.textContent = Math.round(progress) + '%';
+        if (progressBar) progressBar.style.width = totalProgress + '%';
+        if (progressText) progressText.textContent = Math.round(totalProgress) + '%';
+        
+        // Update section indicators in navigation
+        this.updateSectionIndicators(sections);
+        
+        // Update overview section status grid
+        this.updateOverviewSectionStatus(sections);
+        
+        return {
+            totalProgress,
+            completedSections,
+            totalSections: Object.keys(sections).length
+        };
+    }
+
+    checkSectionCompletion(sectionId, section) {
+        // Check basic required fields
+        for (const fieldId of section.requiredFields) {
+            const field = document.getElementById(fieldId);
+            if (!field || field.value.trim() === '') {
+                return false;
+            }
+        }
+
+        // Special validation per section
+        switch (sectionId) {
+            case 'family-info':
+                return this.checkFamilyCompletion();
+            case 'securities':
+                // At least one asset field should be filled
+                const bankAccounts = document.getElementById('bankAccountsCHF');
+                const stockValue = document.getElementById('stockValueUSD');
+                return (bankAccounts && parseFloat(bankAccounts.value) > 0) || 
+                       (stockValue && parseFloat(stockValue.value) > 0);
+            case 'properties':
+                // Only required if user has Swiss property
+                const swissAddress = document.getElementById('swissAddress');
+                const swissTaxValue = document.getElementById('swissTaxValue');
+                return (swissAddress && swissAddress.value.trim() !== '') &&
+                       (swissTaxValue && parseFloat(swissTaxValue.value) > 0);
+            case 'debts':
+                // Only required if user has debts
+                const mortgage = document.getElementById('swissMortgage');
+                return !mortgage || mortgage.value.trim() === '' || parseFloat(mortgage.value) >= 0;
+            default:
+                return true;
+        }
+    }
+
+    checkFamilyCompletion() {
+        const filingStatus = document.getElementById('filingStatus');
+        const childrenCount = document.getElementById('childrenUnder18');
+        
+        // Not required for single filers
+        if (!filingStatus || filingStatus.value !== 'married') {
+            return true;
+        }
+        
+        // Check spouse information is filled
+        const spouseFirstName = document.getElementById('spouseFirstName') || document.getElementById('detailedSpouseFirstName');
+        const spouseLastName = document.getElementById('spouseLastName') || document.getElementById('detailedSpouseLastName');
+        
+        if (!spouseFirstName || !spouseLastName || 
+            spouseFirstName.value.trim() === '' || spouseLastName.value.trim() === '') {
+            return false;
+        }
+        
+        // If there are children, check at least basic info for each child
+        if (childrenCount && parseInt(childrenCount.value) > 0) {
+            const numChildren = parseInt(childrenCount.value);
+            for (let i = 0; i < numChildren; i++) {
+                const childFirstName = document.getElementById(`child${i}FirstName`);
+                const childLastName = document.getElementById(`child${i}LastName`);
+                const childDOB = document.getElementById(`child${i}DateOfBirth`);
+                
+                if (!childFirstName || !childLastName || !childDOB ||
+                    childFirstName.value.trim() === '' || 
+                    childLastName.value.trim() === '' ||
+                    childDOB.value.trim() === '') {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+
+    updateOverviewSectionStatus(sections) {
+        // Update the section status grid in overview
+        const grid = document.getElementById('sectionStatusGrid');
+        if (!grid) return;
+
+        const statusElements = grid.querySelectorAll('.section-status');
+        const sectionDivs = grid.querySelectorAll('[data-section-id]');
+        
+        // If grid hasn't been populated yet, do nothing (it will be populated on overview load)
+        if (statusElements.length === 0) return;
+
+        let index = 0;
+        for (const [sectionId, section] of Object.entries(sections)) {
+            const isComplete = this.checkSectionCompletion(sectionId, section);
+            const statusElement = statusElements[index];
+            const sectionDiv = sectionDivs[index];
+            
+            if (statusElement) {
+                statusElement.textContent = isComplete ? '✓' : '○';
+                statusElement.className = isComplete ? 
+                    'section-status text-green-600 font-bold' : 
+                    'section-status text-gray-400';
+            }
+            
+            if (sectionDiv) {
+                sectionDiv.className = isComplete ?
+                    'flex items-center justify-between p-3 border border-green-200 bg-green-50 rounded-lg hover:bg-green-100 cursor-pointer' :
+                    'flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer';
+            }
+            
+            index++;
+        }
+    }
+
+    updateSectionIndicators(sections) {
+        // Add visual indicators to navigation items
+        for (const [sectionId, section] of Object.entries(sections)) {
+            const navButton = document.querySelector(`button[onclick="showTab('${sectionId}')"]`);
+            if (navButton) {
+                let indicator = navButton.querySelector('.completion-indicator');
+                if (!indicator) {
+                    indicator = document.createElement('span');
+                    indicator.className = 'completion-indicator ml-auto text-xs';
+                    navButton.appendChild(indicator);
+                }
+                
+                const sectionComplete = this.checkSectionCompletion(sectionId, section);
+                
+                if (sectionComplete) {
+                    indicator.textContent = '✓';
+                    indicator.className = 'completion-indicator ml-auto text-xs text-green-600 font-bold';
+                } else {
+                    indicator.textContent = '○';
+                    indicator.className = 'completion-indicator ml-auto text-xs text-gray-400';
+                }
+            }
+        }
     }
 
     // Get assets content (simplified for fallback)

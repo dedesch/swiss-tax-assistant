@@ -1,7 +1,7 @@
 // Vercel serverless function for user authentication
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { createUser, getUserByEmail } from '../lib/db.js';
+import { createUser, getUserByEmail } from '../lib/supabase.js';
 
 export default async function handler(req, res) {
     // Enable CORS
