@@ -25,23 +25,7 @@
     <meta name="twitter:description" data-translate="meta.description" content="Assistant IA pour votre déclaration fiscale suisse. Guidage adapté à votre canton, vérifications pour éviter les erreurs coûteuses.">
     
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'swiss-red': '#D00000',
-                        'alpine-blue': '#1E3A8A',
-                        'neutral-grey': '#6B7280',
-                    },
-                    fontFamily: {
-                        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="/css/tailwind.css">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,10 +87,10 @@
     </script>
 </head>
 <body class="font-sans bg-white text-gray-900 leading-relaxed">
-    <!-- Development Mode Notice -->
-    <div id="dev-notice" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 text-center hidden">
+    <!-- Authentication Required Notice -->
+    <div id="auth-notice" class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 text-center hidden">
         <p class="text-sm font-medium">
-            🔧 Development Mode: Authentication disabled for testing
+            🔐 Authentication required: Please register or login to access the tax assistant
         </p>
     </div>
     

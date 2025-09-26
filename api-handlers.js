@@ -5,20 +5,8 @@ import multer from 'multer';
 import { createUser, getUserByEmail, saveCalculation, getCalculation } from './lib/db.js';
 import DocumentProcessor from './lib/document-processor.js';
 
-// JWT middleware for authentication with development bypass
+// JWT middleware for authentication - ALWAYS required
 const verifyToken = (req, res, next) => {
-    // Development mode bypass - allow access without authentication
-    const isDevelopment = process.env.NODE_ENV !== 'production';
-    
-    if (isDevelopment) {
-        // Create a mock user for development
-        req.user = {
-            userId: 'dev-user',
-            email: 'dev@example.com'
-        };
-        return next();
-    }
-
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -26,8 +14,14 @@ const verifyToken = (req, res, next) => {
         return res.status(401).json({ error: 'Access token required' });
     }
 
+    // Verify JWT_SECRET is properly configured
+    if (!process.env.JWT_SECRET) {
+        console.error('CRITICAL: JWT_SECRET environment variable is not set');
+        return res.status(500).json({ error: 'Server configuration error' });
+    }
+
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
         next();
     } catch (error) {
@@ -59,30 +53,25 @@ const documentProcessor = new DocumentProcessor();
 export const calculationsHandler = async (req, res) => {
     try {
         if (req.method === 'POST') {
-            // Development mode bypass - allow access without authentication
-            const isDevelopment = process.env.NODE_ENV !== 'production';
+            // Verify authentication - ALWAYS required
+            const authHeader = req.headers.authorization;
+            const token = authHeader && authHeader.split(' ')[1];
+
+            if (!token) {
+                return res.status(401).json({ error: 'Authentication required' });
+            }
+
+            // Verify JWT_SECRET is properly configured
+            if (!process.env.JWT_SECRET) {
+                console.error('CRITICAL: JWT_SECRET environment variable is not set');
+                return res.status(500).json({ error: 'Server configuration error' });
+            }
+
             let user;
-            
-            if (isDevelopment) {
-                // Use mock user for development
-                user = {
-                    userId: 'dev-user',
-                    email: 'dev@example.com'
-                };
-            } else {
-                // Verify authentication in production
-                const authHeader = req.headers.authorization;
-                const token = authHeader && authHeader.split(' ')[1];
-
-                if (!token) {
-                    return res.status(401).json({ error: 'Authentication required' });
-                }
-
-                try {
-                    user = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
-                } catch (error) {
-                    return res.status(403).json({ error: 'Invalid token' });
-                }
+            try {
+                user = jwt.verify(token, process.env.JWT_SECRET);
+            } catch (error) {
+                return res.status(403).json({ error: 'Invalid token' });
             }
 
             const { action, taxYear, data } = req.body;
@@ -145,29 +134,25 @@ export const calculationsHandler = async (req, res) => {
                 });
             }
         } else if (req.method === 'GET') {
-            // Development mode bypass for GET requests
-            const isDevelopment = process.env.NODE_ENV !== 'production';
+            // Verify authentication - ALWAYS required
+            const authHeader = req.headers.authorization;
+            const token = authHeader && authHeader.split(' ')[1];
+
+            if (!token) {
+                return res.status(401).json({ error: 'Authentication required' });
+            }
+
+            // Verify JWT_SECRET is properly configured
+            if (!process.env.JWT_SECRET) {
+                console.error('CRITICAL: JWT_SECRET environment variable is not set');
+                return res.status(500).json({ error: 'Server configuration error' });
+            }
+
             let user;
-            
-            if (isDevelopment) {
-                user = {
-                    userId: 'dev-user',
-                    email: 'dev@example.com'
-                };
-            } else {
-                // Verify authentication in production
-                const authHeader = req.headers.authorization;
-                const token = authHeader && authHeader.split(' ')[1];
-
-                if (!token) {
-                    return res.status(401).json({ error: 'Authentication required' });
-                }
-
-                try {
-                    user = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
-                } catch (error) {
-                    return res.status(403).json({ error: 'Invalid token' });
-                }
+            try {
+                user = jwt.verify(token, process.env.JWT_SECRET);
+            } catch (error) {
+                return res.status(403).json({ error: 'Invalid token' });
             }
             
             // Load user's latest calculation
@@ -206,7 +191,10 @@ export const userDataHandler = async (req, res) => {
             
             const token = jwt.sign(
                 { userId: user.id, email: user.email },
-                process.env.JWT_SECRET || 'fallback-secret',
+                process.env.JWT_SECRET || (() => { 
+                    console.error('CRITICAL: JWT_SECRET environment variable is not set'); 
+                    throw new Error('JWT_SECRET must be configured'); 
+                })(),
                 { expiresIn: '7d' }
             );
 
@@ -235,7 +223,10 @@ export const userDataHandler = async (req, res) => {
 
             const token = jwt.sign(
                 { userId: user.id, email: user.email },
-                process.env.JWT_SECRET || 'fallback-secret',
+                process.env.JWT_SECRET || (() => { 
+                    console.error('CRITICAL: JWT_SECRET environment variable is not set'); 
+                    throw new Error('JWT_SECRET must be configured'); 
+                })(),
                 { expiresIn: '7d' }
             );
 
@@ -264,30 +255,25 @@ export const pdfReportHandler = async (req, res) => {
     }
 
     try {
-        // Development mode bypass - allow access without authentication
-        const isDevelopment = process.env.NODE_ENV !== 'production';
+        // Verify authentication - ALWAYS required
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+
+        // Verify JWT_SECRET is properly configured
+        if (!process.env.JWT_SECRET) {
+            console.error('CRITICAL: JWT_SECRET environment variable is not set');
+            return res.status(500).json({ error: 'Server configuration error' });
+        }
+
         let user;
-        
-        if (isDevelopment) {
-            // Use mock user for development
-            user = {
-                userId: 'dev-user',
-                email: 'dev@example.com'
-            };
-        } else {
-            // Verify authentication in production
-            const authHeader = req.headers.authorization;
-            const token = authHeader && authHeader.split(' ')[1];
-
-            if (!token) {
-                return res.status(401).json({ error: 'Authentication required' });
-            }
-
-            try {
-                user = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
-            } catch (error) {
-                return res.status(403).json({ error: 'Invalid token' });
-            }
+        try {
+            user = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (error) {
+            return res.status(403).json({ error: 'Invalid token' });
         }
 
         const { calculationData, reportType = 'summary' } = req.body;
@@ -334,30 +320,25 @@ export const documentUploadHandler = async (req, res) => {
         }
 
         try {
-            // Development mode bypass - allow access without authentication
-            const isDevelopment = process.env.NODE_ENV !== 'production';
+            // Verify authentication - ALWAYS required
+            const authHeader = req.headers.authorization;
+            const token = authHeader && authHeader.split(' ')[1];
+
+            if (!token) {
+                return res.status(401).json({ error: 'Authentication required' });
+            }
+
+            // Verify JWT_SECRET is properly configured
+            if (!process.env.JWT_SECRET) {
+                console.error('CRITICAL: JWT_SECRET environment variable is not set');
+                return res.status(500).json({ error: 'Server configuration error' });
+            }
+
             let user;
-            
-            if (isDevelopment) {
-                // Use mock user for development
-                user = {
-                    userId: 'dev-user',
-                    email: 'dev@example.com'
-                };
-            } else {
-                // Verify authentication in production
-                const authHeader = req.headers.authorization;
-                const token = authHeader && authHeader.split(' ')[1];
-
-                if (!token) {
-                    return res.status(401).json({ error: 'Authentication required' });
-                }
-
-                try {
-                    user = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
-                } catch (error) {
-                    return res.status(403).json({ error: 'Invalid token' });
-                }
+            try {
+                user = jwt.verify(token, process.env.JWT_SECRET);
+            } catch (error) {
+                return res.status(403).json({ error: 'Invalid token' });
             }
 
             if (!req.file) {

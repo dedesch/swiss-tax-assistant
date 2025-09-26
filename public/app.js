@@ -1129,8 +1129,6 @@ function trackCTA(action, plan = null) {
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if in development mode and show notice
-    checkDevelopmentMode();
     
     // Load saved language preference
     const savedLanguage = localStorage.getItem('preferredLanguage') || 'fr';
@@ -1283,30 +1281,6 @@ function selectPlan(planName, price) {
     alert(`You selected the ${planName} plan. Stripe checkout would open here.`);
 }
 
-// Development mode detection
-async function checkDevelopmentMode() {
-    try {
-        // Test API without authentication to see if development mode is active
-        const response = await fetch('/api/calculations', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ data: { bankAccountsCHF: 1000 } })
-        });
-        
-        // If we get a successful response without auth, we're in development mode
-        if (response.ok) {
-            const devNotice = document.getElementById('dev-notice');
-            if (devNotice) {
-                devNotice.classList.remove('hidden');
-            }
-        }
-    } catch (error) {
-        // Silent fail - if endpoint doesn't exist or errors, assume production
-        console.log('Development mode check failed, assuming production');
-    }
-}
 
 // Export functions for inline event handlers
 window.switchLanguage = switchLanguage;

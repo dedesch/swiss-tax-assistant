@@ -4,12 +4,14 @@
 This is a full-stack web application that helps users navigate Swiss tax complexity, specifically specialized for Canton Aargau. The application provides tools for managing assets, securities, real estate, debts, and calculating tax declarations with PDF report generation.
 
 ## Recent Changes (September 26, 2025)
+- **Critical Security Enhancement**: Eliminated ALL development mode authentication bypasses across entire application
+- **Production-Ready Authentication**: Enforced secure JWT-based authentication for ALL API endpoints
+- **Comprehensive Data System**: Implemented automatic saving of complete tax declaration information including family details, financial data, and assets
+- **Security Hardening**: Removed insecure JWT fallback secrets and enforced proper JWT_SECRET environment variable
 - **Vercel Conversion**: Successfully converted project back to Vercel serverless architecture
 - **API Migration**: Converted Express.js server to individual Vercel serverless functions
-- **Development Mode**: Implemented authentication bypass for development testing
 - **Translation System**: Added comprehensive multi-language support (FR/EN/DE/IT)
 - **Landing Page**: Enhanced with Swiss branding and conversion optimization
-- **Authentication**: Robust JWT-based authentication with PostgreSQL backend
 
 ## Project Architecture
 

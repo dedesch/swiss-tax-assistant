@@ -46,10 +46,8 @@ class CalculationEngine {
         // Calculate Swiss tax forms if present
         this.calculateSwissFormsIfPresent();
         
-        // Update progress after calculations
-        if (window.taxApp) {
-            window.taxApp.updateProgress();
-        }
+        // Note: Progress update is handled by the main app after calculations
+        // Removed redundant updateProgress() call to prevent infinite recursion
     }
 
     // Apply Swiss tax business rules and validation

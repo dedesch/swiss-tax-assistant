@@ -6,6 +6,29 @@
     box-sizing: border-box;
 }
 
+/* Save status indicator */
+.save-status {
+    display: block !important;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.save-status.success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.save-status.error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

@@ -54,32 +54,27 @@ export default async function handler(req, res) {
             }
 
             try {
-                // Development mode bypass - allow access without authentication
-                const isDevelopment = process.env.NODE_ENV !== 'production';
+                // Verify authentication - required for all users
+                const authHeader = req.headers.authorization;
+                const token = authHeader && authHeader.split(' ')[1];
+
+                if (!token) {
+                    res.status(401).json({ error: 'Authentication required' });
+                    return resolve();
+                }
+
                 let user;
-                
-                if (isDevelopment) {
-                    // Use mock user for development with numeric ID for database compatibility
-                    user = {
-                        userId: 999999,
-                        email: 'dev@example.com'
-                    };
-                } else {
-                    // Verify authentication in production
-                    const authHeader = req.headers.authorization;
-                    const token = authHeader && authHeader.split(' ')[1];
-
-                    if (!token) {
-                        res.status(401).json({ error: 'Authentication required' });
+                try {
+                    // Verify JWT_SECRET is properly configured
+                    if (!process.env.JWT_SECRET) {
+                        console.error('CRITICAL: JWT_SECRET environment variable is not set');
+                        res.status(500).json({ error: 'Server configuration error' });
                         return resolve();
                     }
-
-                    try {
-                        user = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
-                    } catch (error) {
-                        res.status(403).json({ error: 'Invalid token' });
-                        return resolve();
-                    }
+                    user = jwt.verify(token, process.env.JWT_SECRET);
+                } catch (error) {
+                    res.status(403).json({ error: 'Invalid token' });
+                    return resolve();
                 }
 
                 if (!req.file) {

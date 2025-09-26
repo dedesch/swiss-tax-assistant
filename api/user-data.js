@@ -37,7 +37,10 @@ export default async function handler(req, res) {
             
             const token = jwt.sign(
                 { userId: user.id, email: user.email },
-                process.env.JWT_SECRET || 'fallback-secret',
+                process.env.JWT_SECRET || (() => { 
+                    console.error('CRITICAL: JWT_SECRET environment variable is not set'); 
+                    throw new Error('JWT_SECRET must be configured'); 
+                })(),
                 { expiresIn: '7d' }
             );
 
@@ -66,7 +69,10 @@ export default async function handler(req, res) {
 
             const token = jwt.sign(
                 { userId: user.id, email: user.email },
-                process.env.JWT_SECRET || 'fallback-secret',
+                process.env.JWT_SECRET || (() => { 
+                    console.error('CRITICAL: JWT_SECRET environment variable is not set'); 
+                    throw new Error('JWT_SECRET must be configured'); 
+                })(),
                 { expiresIn: '7d' }
             );
 
