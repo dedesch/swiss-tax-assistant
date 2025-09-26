@@ -1,8 +1,8 @@
-<div id="overview" class="tab-content active">
-    <div class="form-section">
-        <h3>Welcome to Your Swiss Tax Assistant</h3>
-        <p>This tool will help you navigate the Swiss tax declaration process, particularly for complex situations involving:</p>
-        <ul style="margin: 15px 0 15px 30px; line-height: 1.6;">
+<div id="overview" class="space-y-6">
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Welcome to Your Swiss Tax Assistant</h3>
+        <p class="text-gray-600 mb-4">This tool will help you navigate the Swiss tax declaration process, particularly for complex situations involving:</p>
+        <ul class="space-y-2 text-gray-600 ml-6 list-disc">
             <li>International assets and properties</li>
             <li>Foreign currency investments</li>
             <li>Business vs private asset classification</li>
@@ -10,73 +10,47 @@
             <li>Stock compensation plans</li>
         </ul>
         
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressBar"></div>
+        <div class="mt-6">
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-swiss-red h-2.5 rounded-full transition-all duration-300" id="progressBar" style="width: 0%"></div>
+            </div>
+            <p class="text-center text-gray-500 mt-2">Progress: <span id="progressText">0%</span></p>
         </div>
-        <p style="text-align: center; color: #6c757d;">Progress: <span id="progressText">0%</span></p>
     </div>
 
-    <div class="form-section">
-        <h3>Personal Information</h3>
-        <div class="form-group">
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Personal Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-                <label>First Name</label>
-                <input type="text" id="firstName" onchange="updateProgress()">
+                <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <input type="text" id="firstName" onchange="updateProgress()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
             </div>
             <div>
-                <label>Last Name</label>
-                <input type="text" id="lastName" onchange="updateProgress()">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <input type="text" id="lastName" onchange="updateProgress()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
             </div>
         </div>
-        <div class="form-group">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-                <label>Address</label>
-                <input type="text" id="address" onchange="updateProgress()">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <input type="text" id="address" onchange="updateProgress()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
             </div>
             <div>
-                <label>Tax Year</label>
-                <select id="taxYear" onchange="updateProgress()">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tax Year</label>
+                <select id="taxYear" onchange="updateProgress()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
                     <option value="2024">2024</option>
                     <option value="2023">2023</option>
                 </select>
             </div>
         </div>
         
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="btn btn-success" onclick="saveProgress()">💾 Save Progress</button>
-            <button class="btn btn-secondary" onclick="loadProgress()">📂 Load Saved Data</button>
+        <div class="flex justify-center space-x-4 mt-6">
+            <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors" onclick="saveProgress()">💾 Save Progress</button>
+            <button class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition-colors" onclick="loadProgress()">📂 Load Saved Data</button>
         </div>
     </div>
 
-    <div class="info">
-        <strong>Getting Started:</strong> Fill out each section systematically. The tool will automatically classify your assets and debts, handle currency conversions, and generate the appropriate Swiss tax forms. Register to save your progress!
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p class="text-blue-800"><strong>Getting Started:</strong> Fill out each section systematically. The tool will automatically classify your assets and debts, handle currency conversions, and generate the appropriate Swiss tax forms. Register to save your progress!</p>
     </div>
 </div>
-
-<style>
-.progress-bar {
-    width: 100%;
-    height: 20px;
-    background-color: #e0e0e0;
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 20px 0;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #1e3c72, #2a5298);
-    border-radius: 10px;
-    width: 0%;
-    transition: width 0.5s ease;
-}
-
-.info {
-    background: #e8f4f8;
-    padding: 15px;
-    border-radius: 8px;
-    border-left: 4px solid #1e3c72;
-    margin: 20px 0;
-    line-height: 1.6;
-}
-</style>

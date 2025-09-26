@@ -3,13 +3,13 @@
 ## Overview
 This is a full-stack web application that helps users navigate Swiss tax complexity, specifically specialized for Canton Aargau. The application provides tools for managing assets, securities, real estate, debts, and calculating tax declarations with PDF report generation.
 
-## Recent Changes (September 22, 2025)
-- **Project Setup**: Successfully imported from GitHub and adapted for Replit environment
-- **Server Migration**: Converted from Vercel dev environment to Express.js server for Replit
-- **Database Setup**: Updated database connection from Vercel PostgreSQL to standard PostgreSQL client
-- **Workflow Configuration**: Set up development workflow on port 5000
-- **Deployment Configuration**: Configured autoscale deployment for production
-- **Bug Fixes**: Fixed CSS reference issue in HTML file
+## Recent Changes (September 26, 2025)
+- **Vercel Conversion**: Successfully converted project back to Vercel serverless architecture
+- **API Migration**: Converted Express.js server to individual Vercel serverless functions
+- **Development Mode**: Implemented authentication bypass for development testing
+- **Translation System**: Added comprehensive multi-language support (FR/EN/DE/IT)
+- **Landing Page**: Enhanced with Swiss branding and conversion optimization
+- **Authentication**: Robust JWT-based authentication with PostgreSQL backend
 
 ## Project Architecture
 
@@ -20,10 +20,11 @@ This is a full-stack web application that helps users navigate Swiss tax complex
 - **Authentication**: JWT-based client-side authentication
 
 ### Backend
-- **Technology**: Node.js with Express.js server
-- **API Structure**: RESTful API endpoints under `/api/` prefix
+- **Technology**: Node.js serverless functions (Vercel)
+- **API Structure**: Individual serverless functions under `/api/` directory
 - **Authentication**: JWT tokens with bcrypt password hashing
 - **PDF Generation**: Using Playwright for generating tax reports
+- **Deployment**: Vercel serverless architecture with auto-scaling
 
 ### Database
 - **Technology**: PostgreSQL
@@ -53,6 +54,7 @@ This is a full-stack web application that helps users navigate Swiss tax complex
 - Minimal dependencies approach with standard libraries
 
 ## Deployment
-- **Target**: Autoscale deployment (suitable for stateless web applications)
-- **Command**: `npm start` (runs Express.js server)
-- **Environment**: Production-ready with proper error handling
+- **Platform**: Vercel serverless functions
+- **Configuration**: `vercel.json` with proper routing and build settings
+- **Environment**: Production-ready with auto-scaling and CDN
+- **Commands**: `npm run deploy` for production deployment

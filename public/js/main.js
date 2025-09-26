@@ -39,6 +39,9 @@ class TaxAssistantApp {
     // Load tab content dynamically
     async loadTabContent(tabName) {
         try {
+            // Update navigation state first
+            this.updateNavigation(tabName);
+            
             const mainContent = document.getElementById('mainContent');
             if (!mainContent) {
                 console.error('MainContent element not found, retrying in 100ms...');
@@ -124,17 +127,40 @@ class TaxAssistantApp {
 
     // Update active tab styling
     updateActiveTab(tabName) {
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.classList.remove('active');
+        // Updated for Tailwind CSS styling
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+            item.classList.remove('bg-swiss-red', 'text-white');
+            item.classList.add('text-gray-700', 'hover:bg-gray-50');
         });
         
-        // Find the tab button by onclick attribute or text content
-        const targetTab = Array.from(document.querySelectorAll('.nav-tab')).find(tab => {
-            return tab.getAttribute('onclick')?.includes(`'${tabName}'`);
+        // Find the navigation item by onclick attribute
+        const targetTab = Array.from(document.querySelectorAll('.nav-item')).find(item => {
+            return item.getAttribute('onclick')?.includes(`'${tabName}'`);
         });
         
         if (targetTab) {
             targetTab.classList.add('active');
+            targetTab.classList.add('bg-swiss-red', 'text-white');
+            targetTab.classList.remove('text-gray-700', 'hover:bg-gray-50');
+        }
+    }
+
+    // Update navigation state for vertical nav (Tailwind styling)
+    updateNavigation(tabName) {
+        // Remove active styling from all navigation items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+            item.classList.remove('bg-swiss-red', 'text-white');
+            item.classList.add('text-gray-700', 'hover:bg-gray-50');
+        });
+        
+        // Add active styling to clicked navigation item
+        const activeTab = document.querySelector(`[onclick="showTab('${tabName}')"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+            activeTab.classList.add('bg-swiss-red', 'text-white');
+            activeTab.classList.remove('text-gray-700', 'hover:bg-gray-50');
         }
     }
 
@@ -160,11 +186,11 @@ class TaxAssistantApp {
 
     getOverviewContent() {
         return `
-            <div id="overview" class="tab-content active">
-                <div class="form-section">
-                    <h3>Welcome to Your Swiss Tax Assistant</h3>
-                    <p>This tool will help you navigate the Swiss tax declaration process, particularly for complex situations involving:</p>
-                    <ul style="margin: 15px 0 15px 30px; line-height: 1.6;">
+            <div id="overview" class="space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Welcome to Your Swiss Tax Assistant</h3>
+                    <p class="text-gray-600 mb-4">This tool will help you navigate the Swiss tax declaration process, particularly for complex situations involving:</p>
+                    <ul class="space-y-2 text-gray-600 ml-6 list-disc">
                         <li>International assets and properties</li>
                         <li>Foreign currency investments</li>
                         <li>Business vs private asset classification</li>
@@ -172,46 +198,48 @@ class TaxAssistantApp {
                         <li>Stock compensation plans</li>
                     </ul>
                     
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressBar"></div>
+                    <div class="mt-6">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-swiss-red h-2.5 rounded-full transition-all duration-300" id="progressBar" style="width: 0%"></div>
+                        </div>
+                        <p class="text-center text-gray-500 mt-2">Progress: <span id="progressText">0%</span></p>
                     </div>
-                    <p style="text-align: center; color: #6c757d;">Progress: <span id="progressText">0%</span></p>
                 </div>
 
-                <div class="form-section">
-                    <h3>Personal Information</h3>
-                    <div class="form-group">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Personal Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label>First Name</label>
-                            <input type="text" id="firstName" onchange="updateProgress()">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                            <input type="text" id="firstName" onchange="updateProgress()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
                         </div>
                         <div>
-                            <label>Last Name</label>
-                            <input type="text" id="lastName" onchange="updateProgress()">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                            <input type="text" id="lastName" onchange="updateProgress()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label>Address</label>
-                            <input type="text" id="address" onchange="updateProgress()">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                            <input type="text" id="address" onchange="updateProgress()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
                         </div>
                         <div>
-                            <label>Tax Year</label>
-                            <select id="taxYear" onchange="updateProgress()">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tax Year</label>
+                            <select id="taxYear" onchange="updateProgress()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
                                 <option value="2024">2024</option>
                                 <option value="2023">2023</option>
                             </select>
                         </div>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button class="btn btn-success" onclick="saveProgress()">💾 Save Progress</button>
-                        <button class="btn btn-secondary" onclick="loadProgress()">📂 Load Saved Data</button>
+                    <div class="flex justify-center space-x-4 mt-6">
+                        <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors" onclick="saveProgress()">💾 Save Progress</button>
+                        <button class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition-colors" onclick="loadProgress()">📂 Load Saved Data</button>
                     </div>
                 </div>
 
-                <div class="info">
-                    <strong>Getting Started:</strong> Fill out each section systematically. The tool will automatically classify your assets and debts, handle currency conversions, and generate the appropriate Swiss tax forms. Register to save your progress!
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p class="text-blue-800"><strong>Getting Started:</strong> Fill out each section systematically. The tool will automatically classify your assets and debts, handle currency conversions, and generate the appropriate Swiss tax forms. Register to save your progress!</p>
                 </div>
             </div>
         `;
@@ -277,61 +305,61 @@ class TaxAssistantApp {
     // Swiss tax form method stubs (fallback content)
     getMainDeclarationContent() {
         return `
-            <div class="form-section">
-                <h3>Steuererklärung - Main Tax Declaration</h3>
-                <p>Please use the main declaration component for detailed entry. This is a fallback view.</p>
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Steuererklärung - Main Tax Declaration</h3>
+                <p class="text-gray-600">Please use the main declaration component for detailed entry. This is a fallback view.</p>
             </div>
         `;
     }
 
     getSecuritiesContent() {
         return `
-            <div class="form-section">
-                <h3>Wertschriften - Securities Register</h3>
-                <p>Please use the securities component for detailed entry. This is a fallback view.</p>
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Wertschriften - Securities Register</h3>
+                <p class="text-gray-600">Please use the securities component for detailed entry. This is a fallback view.</p>
             </div>
         `;
     }
 
     getPropertyMaintenanceContent() {
         return `
-            <div class="form-section">
-                <h3>Liegenschaftsunterhalt - Property Maintenance</h3>
-                <p>Please use the property maintenance component for detailed entry. This is a fallback view.</p>
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Liegenschaftsunterhalt - Property Maintenance</h3>
+                <p class="text-gray-600">Please use the property maintenance component for detailed entry. This is a fallback view.</p>
             </div>
         `;
     }
 
     getProfessionalCostsContent() {
         return `
-            <div class="form-section">
-                <h3>Berufskosten - Professional Costs</h3>
-                <p>Please use the professional costs component for detailed entry. This is a fallback view.</p>
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Berufskosten - Professional Costs</h3>
+                <p class="text-gray-600">Please use the professional costs component for detailed entry. This is a fallback view.</p>
             </div>
         `;
     }
 
     getPensionsContent() {
         return `
-            <div class="form-section">
-                <h3>Renten und Ersatzeinkünfte - Pensions & Benefits</h3>
-                <p>Please use the pensions component for detailed entry. This is a fallback view.</p>
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Renten und Ersatzeinkünfte - Pensions & Benefits</h3>
+                <p class="text-gray-600">Please use the pensions component for detailed entry. This is a fallback view.</p>
             </div>
         `;
     }
 
     getPropertiesContent() {
         return `
-            <div class="form-section">
-                <h3>Swiss Properties</h3>
-                <div class="form-group">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Swiss Properties</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label>Property Address</label>
-                        <input type="text" id="swissAddress" onchange="calculateTotals()">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Property Address</label>
+                        <input type="text" id="swissAddress" onchange="calculateTotals()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
                     </div>
                     <div>
-                        <label>Official Tax Value (CHF)</label>
-                        <input type="number" id="swissTaxValue" step="0.01" onchange="calculateTotals()">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Official Tax Value (CHF)</label>
+                        <input type="number" id="swissTaxValue" step="0.01" onchange="calculateTotals()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
                     </div>
                 </div>
             </div>
@@ -340,16 +368,16 @@ class TaxAssistantApp {
 
     getDebtsContent() {
         return `
-            <div class="form-section">
-                <h3>Mortgage & Loan Information</h3>
-                <div class="form-group">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Mortgage & Loan Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label>Swiss Mortgage Balance (CHF)</label>
-                        <input type="number" id="swissMortgage" step="0.01" onchange="calculateTotals()">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Swiss Mortgage Balance (CHF)</label>
+                        <input type="number" id="swissMortgage" step="0.01" onchange="calculateTotals()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
                     </div>
                     <div>
-                        <label>Swiss Mortgage Interest Paid 2024 (CHF)</label>
-                        <input type="number" id="swissMortgageInterest" step="0.01" onchange="calculateTotals()">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Swiss Mortgage Interest Paid 2024 (CHF)</label>
+                        <input type="number" id="swissMortgageInterest" step="0.01" onchange="calculateTotals()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
                     </div>
                 </div>
             </div>
@@ -363,15 +391,15 @@ class TaxAssistantApp {
 
     getLandingFallbackContent() {
         return `
-            <div class="form-section">
-                <h1>Swiss Tax Assistant</h1>
-                <p>AI-Powered Tax Declaration for Canton Aargau</p>
-                <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin: 20px 0;">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Swiss Tax Assistant</h1>
+                <p class="text-gray-600 mb-4">AI-Powered Tax Declaration for Canton Aargau</p>
+                <div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg mb-6">
                     <strong>Component Loading Error:</strong> The landing page could not be loaded. 
                     Please refresh the page or contact support if this issue persists.
                 </div>
-                <div style="text-align: center; margin: 30px 0;">
-                    <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                <div class="text-center">
+                    <button class="bg-swiss-red hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors" onclick="location.reload()">Refresh Page</button>
                 </div>
             </div>
         `;
@@ -379,15 +407,15 @@ class TaxAssistantApp {
 
     getPricingFallbackContent() {
         return `
-            <div class="form-section">
-                <h2>Pricing Plans</h2>
-                <p>Choose the plan that's right for you</p>
-                <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin: 20px 0;">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900 mb-2">Pricing Plans</h2>
+                <p class="text-gray-600 mb-4">Choose the plan that's right for you</p>
+                <div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg mb-6">
                     <strong>Component Loading Error:</strong> The pricing page could not be loaded. 
                     Please refresh the page or contact support if this issue persists.
                 </div>
-                <div style="text-align: center; margin: 30px 0;">
-                    <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                <div class="text-center">
+                    <button class="bg-swiss-red hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors" onclick="location.reload()">Refresh Page</button>
                 </div>
             </div>
         `;
@@ -395,15 +423,15 @@ class TaxAssistantApp {
 
     getFallbackDocumentUploadContent() {
         return `
-            <div class="form-section">
-                <h3>📄 Document Upload & Auto-Fill</h3>
-                <p>Upload your Swiss tax documents to automatically extract and pre-fill relevant information.</p>
-                <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin: 20px 0;">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">📄 Document Upload & Auto-Fill</h3>
+                <p class="text-gray-600 mb-4">Upload your Swiss tax documents to automatically extract and pre-fill relevant information.</p>
+                <div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg mb-6">
                     <strong>Component Loading Error:</strong> The document upload interface could not be loaded. 
                     Please refresh the page or contact support if this issue persists.
                 </div>
-                <div style="text-align: center; margin: 30px 0;">
-                    <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                <div class="text-center">
+                    <button class="bg-swiss-red hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors" onclick="location.reload()">Refresh Page</button>
                 </div>
             </div>
         `;
@@ -411,16 +439,16 @@ class TaxAssistantApp {
 
     getCalculateContent() {
         return `
-            <div class="form-section">
-                <h3>Tax Calculation Summary</h3>
-                <div style="text-align: center;">
-                    <button class="btn" onclick="generateReport()">📊 Generate Complete Report</button>
-                    <button class="btn btn-warning" onclick="downloadPDF()">📄 Download PDF Report</button>
-                    <button class="btn btn-success" onclick="saveProgress()">💾 Save Final Results</button>
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Tax Calculation Summary</h3>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button class="bg-swiss-red hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors" onclick="generateReport()">📊 Generate Complete Report</button>
+                    <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-md transition-colors" onclick="downloadPDF()">📄 Download PDF Report</button>
+                    <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors" onclick="saveProgress()">💾 Save Final Results</button>
                 </div>
             </div>
-            <div class="results-panel" id="resultsPanel" style="display: none;">
-                <h4>Wealth Declaration Summary</h4>
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hidden" id="resultsPanel">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">Wealth Declaration Summary</h4>
                 <div id="wealthSummary"></div>
             </div>
         `;

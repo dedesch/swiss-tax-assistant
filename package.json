@@ -2,16 +2,15 @@
     "name": "swiss-tax-assistant",
     "version": "1.0.0",
     "description": "Swiss Tax Declaration Assistant - Full Stack Application",
-    "main": "api/index.js",
+    "main": "api/calculations.js",
     "type": "module",
     "scripts": {
-        "dev": "node server.js",
-        "build": "echo 'No build step required'",
-        "start": "node api/index.js",
-        "vercel-build": "echo 'No build step required'"
+        "dev": "vercel dev",
+        "build": "echo 'No build step required for Vercel'",
+        "start": "vercel dev",
+        "deploy": "vercel --prod"
     },
     "dependencies": {
-        "@vercel/postgres": "^0.8.0",
         "bcryptjs": "^2.4.3",
         "cors": "^2.8.5",
         "express": "^5.1.0",
@@ -34,7 +33,8 @@
         "tax",
         "declaration",
         "assistant",
-        "vercel"
+        "vercel",
+        "serverless"
     ],
     "author": "Swiss Tax Assistant",
     "license": "MIT"

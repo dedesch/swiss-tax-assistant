@@ -103,6 +103,13 @@
     </script>
 </head>
 <body class="font-sans bg-white text-gray-900 leading-relaxed">
+    <!-- Development Mode Notice -->
+    <div id="dev-notice" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 text-center hidden">
+        <p class="text-sm font-medium">
+            🔧 Development Mode: Authentication disabled for testing
+        </p>
+    </div>
+    
     <!-- Cookie Consent Banner -->
     <div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 z-50 transform translate-y-full transition-transform duration-300">
         <div class="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -122,34 +129,143 @@
 
     <!-- Header -->
     <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-            <!-- Logo -->
-            <div class="flex items-center space-x-2">
-                <svg class="w-8 h-8 text-swiss-red" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span class="text-xl font-bold text-gray-900">TaxPilot</span>
+        <div class="container mx-auto px-4 py-4">
+            <!-- Top row with logo, navigation, and auth -->
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-swiss-red" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="text-xl font-bold text-gray-900">TaxPilot</span>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-gray-700 hover:text-swiss-red font-medium transition-colors" data-translate="nav.home">Accueil</a>
+                    <a href="#problem" class="text-gray-700 hover:text-swiss-red font-medium transition-colors" data-translate="nav.problem">Problème</a>
+                    <a href="#solution" class="text-gray-700 hover:text-swiss-red font-medium transition-colors" data-translate="nav.solution">Solution</a>
+                    <a href="#features" class="text-gray-700 hover:text-swiss-red font-medium transition-colors" data-translate="nav.features">Fonctionnalités</a>
+                    <a href="#faqs" class="text-gray-700 hover:text-swiss-red font-medium transition-colors" data-translate="nav.faqs">FAQ</a>
+                </nav>
+                
+                <!-- Auth buttons and Language switcher -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-2">
+                        <button id="header-login-btn" class="text-gray-700 hover:text-swiss-red font-medium transition-colors" data-translate="auth.login">Se connecter</button>
+                        <span class="text-gray-300">|</span>
+                        <button id="header-register-btn" class="bg-swiss-red hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium transition-colors" data-translate="auth.register">S'inscrire</button>
+                    </div>
+                    
+                    <!-- Language Switcher -->
+                    <div class="relative">
+                        <select id="language-switcher" class="appearance-none bg-white border border-gray-300 rounded px-3 py-2 pr-8 text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
+                            <option value="fr">🇫🇷 FR</option>
+                            <option value="en">🇬🇧 EN</option>
+                            <option value="de">🇩🇪 DE</option>
+                            <option value="it">🇮🇹 IT</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile menu button -->
+                    <button id="mobile-menu-btn" class="md:hidden text-gray-700 hover:text-swiss-red">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
             
-            <!-- Language Switcher -->
-            <div class="relative">
-                <select id="language-switcher" class="appearance-none bg-white border border-gray-300 rounded px-3 py-2 pr-8 text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent">
-                    <option value="fr">🇫🇷 FR</option>
-                    <option value="en">🇬🇧 EN</option>
-                    <option value="de">🇩🇪 DE</option>
-                    <option value="it">🇮🇹 IT</option>
-                </select>
-                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+                <nav class="flex flex-col space-y-2">
+                    <a href="#home" class="text-gray-700 hover:text-swiss-red font-medium py-2 transition-colors" data-translate="nav.home">Accueil</a>
+                    <a href="#problem" class="text-gray-700 hover:text-swiss-red font-medium py-2 transition-colors" data-translate="nav.problem">Problème</a>
+                    <a href="#solution" class="text-gray-700 hover:text-swiss-red font-medium py-2 transition-colors" data-translate="nav.solution">Solution</a>
+                    <a href="#features" class="text-gray-700 hover:text-swiss-red font-medium py-2 transition-colors" data-translate="nav.features">Fonctionnalités</a>
+                    <a href="#faqs" class="text-gray-700 hover:text-swiss-red font-medium py-2 transition-colors" data-translate="nav.faqs">FAQ</a>
+                    <div class="flex flex-col space-y-2 pt-2 border-t border-gray-200">
+                        <button id="mobile-login-btn" class="text-left text-gray-700 hover:text-swiss-red font-medium py-2 transition-colors" data-translate="auth.login">Se connecter</button>
+                        <button id="mobile-register-btn" class="text-left bg-swiss-red hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium transition-colors" data-translate="auth.register">S'inscrire</button>
+                    </div>
+                </nav>
+            </div>
+            
+            <!-- Inline Auth Forms -->
+            <div id="inline-auth-section" class="hidden mt-4 pt-4 border-t border-gray-200">
+                <div class="max-w-md mx-auto">
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <div class="flex justify-center mb-6">
+                            <div class="bg-white p-1 rounded-lg shadow-sm">
+                                <button id="inline-tab-login" class="px-4 py-2 rounded-md text-sm font-medium transition-all bg-swiss-red text-white" onclick="showInlineAuthTab('login')">
+                                    Se connecter
+                                </button>
+                                <button id="inline-tab-register" class="px-4 py-2 rounded-md text-sm font-medium transition-all text-gray-600 hover:text-gray-900" onclick="showInlineAuthTab('register')">
+                                    S'inscrire
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Login Form -->
+                        <div id="inline-login-form" class="space-y-4">
+                            <form id="inlineLoginForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" id="inlineLoginEmail" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent text-gray-900">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                                    <input type="password" id="inlineLoginPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent text-gray-900">
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button type="submit" class="flex-1 bg-swiss-red hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                                        Se connecter
+                                    </button>
+                                    <button type="button" onclick="hideInlineAuth()" class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Register Form -->
+                        <div id="inline-register-form" class="space-y-4 hidden">
+                            <form id="inlineRegisterForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" id="inlineRegisterEmail" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent text-gray-900">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                                    <input type="password" id="inlineRegisterPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent text-gray-900">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirmer le mot de passe</label>
+                                    <input type="password" id="inlineConfirmPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swiss-red focus:border-transparent text-gray-900">
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button type="submit" class="flex-1 bg-swiss-red hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                                        S'inscrire
+                                    </button>
+                                    <button type="button" onclick="hideInlineAuth()" class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="bg-gradient-to-br from-alpine-blue to-blue-800 text-white py-20">
+    <section id="home" class="bg-gradient-to-br from-alpine-blue to-blue-800 text-white py-20">
         <div class="container mx-auto px-4 text-center">
             <div class="max-w-4xl mx-auto">
                 <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight" data-translate="hero.headline">
@@ -160,10 +276,10 @@
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                    <button id="cta-primary" class="bg-swiss-red hover:bg-red-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50" data-translate="hero.cta.primary">
+                    <button id="cta-primary" onclick="showInlineAuth('register')" class="bg-swiss-red hover:bg-red-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50" data-translate="hero.cta.primary">
                         Commencer gratuitement
                     </button>
-                    <button id="cta-secondary" class="border-2 border-white text-white hover:bg-white hover:text-alpine-blue px-8 py-4 rounded-lg text-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50" data-translate="hero.cta.secondary">
+                    <button id="cta-secondary" onclick="scrollToSection('solution')" class="border-2 border-white text-white hover:bg-white hover:text-alpine-blue px-8 py-4 rounded-lg text-lg font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50" data-translate="hero.cta.secondary">
                         Voir comment ça marche
                     </button>
                 </div>
@@ -193,6 +309,78 @@
                             <path fill-rule="evenodd" d="M10 2L3 7v3c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-7-5z"/>
                         </svg>
                         <span data-translate="hero.trust.fees">Pas de frais cachés</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section id="problem" class="py-16 bg-red-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-8 text-gray-900" data-translate="problem.title">
+                    Les défis de la déclaration fiscale suisse
+                </h2>
+                <p class="text-xl text-gray-600 mb-12" data-translate="problem.subtitle">
+                    Chaque année, des milliers de contribuables font des erreurs coûteuses
+                </p>
+                
+                <div class="grid md:grid-cols-3 gap-8 mb-12">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-swiss-red" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4" data-translate="problem.complexity.title">Complexité excessive</h3>
+                        <p class="text-gray-600" data-translate="problem.complexity.description">
+                            Chaque canton a ses propres règles, formulaires et taux. Difficile de s'y retrouver.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-swiss-red" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4" data-translate="problem.errors.title">Erreurs coûteuses</h3>
+                        <p class="text-gray-600" data-translate="problem.errors.description">
+                            Déductions manquées, calculs incorrects. En moyenne, les erreurs coûtent 800 CHF par an.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-swiss-red" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4" data-translate="problem.time.title">Perte de temps</h3>
+                        <p class="text-gray-600" data-translate="problem.time.description">
+                            En moyenne 12 heures par an, stress et frustration inclus.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-swiss-red" data-translate="problem.stats.title">
+                        Les chiffres parlent d'eux-mêmes
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-swiss-red mb-2">73%</div>
+                            <p class="text-gray-600" data-translate="problem.stats.deductions">Oublient des déductions importantes</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-swiss-red mb-2">850 CHF</div>
+                            <p class="text-gray-600" data-translate="problem.stats.cost">Coût moyen des erreurs par an</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-swiss-red mb-2">12h</div>
+                            <p class="text-gray-600" data-translate="problem.stats.time">Temps moyen passé sur la déclaration</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -240,8 +428,8 @@
         </div>
     </section>
 
-    <!-- How It Works -->
-    <section id="how-it-works" class="py-16 bg-white">
+    <!-- Solution - How It Works -->
+    <section id="solution" class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4" data-translate="how.title">Comment ça marche</h2>
@@ -294,8 +482,8 @@
         </div>
     </section>
 
-    <!-- Product Tour -->
-    <section id="product-tour" class="py-16 bg-gray-50">
+    <!-- Features - Product Tour -->
+    <section id="features" class="py-16 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4" data-translate="features.title">Fonctionnalités principales</h2>
@@ -813,6 +1001,127 @@
         </div>
     </section>
 
+    <!-- FAQs Section -->
+    <section id="faqs" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4" data-translate="faqs.title">Questions fréquentes</h2>
+                    <p class="text-xl text-gray-600" data-translate="faqs.subtitle">
+                        Tout ce que vous devez savoir sur TaxPilot
+                    </p>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <button class="flex justify-between items-center w-full text-left" onclick="toggleFAQ(this)">
+                            <h3 class="text-lg font-semibold text-gray-900" data-translate="faqs.q1.question">
+                                TaxPilot est-il compatible avec tous les cantons suisses ?
+                            </h3>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="hidden mt-4">
+                            <p class="text-gray-600" data-translate="faqs.q1.answer">
+                                Oui, TaxPilot prend en charge tous les 26 cantons suisses. Notre système s'adapte automatiquement aux spécificités fiscales de votre canton de résidence.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <button class="flex justify-between items-center w-full text-left" onclick="toggleFAQ(this)">
+                            <h3 class="text-lg font-semibold text-gray-900" data-translate="faqs.q2.question">
+                                Mes données personnelles sont-elles sécurisées ?
+                            </h3>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="hidden mt-4">
+                            <p class="text-gray-600" data-translate="faqs.q2.answer">
+                                Absolument. Nous utilisons un chiffrement de niveau bancaire (AES-256) et nos serveurs sont situés en Suisse. Vos données ne sont jamais partagées avec des tiers.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <button class="flex justify-between items-center w-full text-left" onclick="toggleFAQ(this)">
+                            <h3 class="text-lg font-semibold text-gray-900" data-translate="faqs.q3.question">
+                                Puis-je modifier ma déclaration après génération ?
+                            </h3>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="hidden mt-4">
+                            <p class="text-gray-600" data-translate="faqs.q3.answer">
+                                Oui, vous pouvez modifier vos informations à tout moment. Une nouvelle déclaration sera automatiquement générée avec vos modifications.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <button class="flex justify-between items-center w-full text-left" onclick="toggleFAQ(this)">
+                            <h3 class="text-lg font-semibold text-gray-900" data-translate="faqs.q4.question">
+                                Que se passe-t-il si j'ai des questions spécifiques ?
+                            </h3>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="hidden mt-4">
+                            <p class="text-gray-600" data-translate="faqs.q4.answer">
+                                Notre équipe support est disponible par chat et email. Pour les cas complexes, nous proposons également une révision par un expert fiscal certifié.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <button class="flex justify-between items-center w-full text-left" onclick="toggleFAQ(this)">
+                            <h3 class="text-lg font-semibold text-gray-900" data-translate="faqs.q5.question">
+                                Combien coûte TaxPilot ?
+                            </h3>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="hidden mt-4">
+                            <p class="text-gray-600" data-translate="faqs.q5.answer">
+                                Nous proposons plusieurs formules : Starter (39 CHF), Plus (79 CHF) et Pro (149 CHF). Toutes incluent une garantie satisfait ou remboursé de 30 jours.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <button class="flex justify-between items-center w-full text-left" onclick="toggleFAQ(this)">
+                            <h3 class="text-lg font-semibold text-gray-900" data-translate="faqs.q6.question">
+                                Puis-je essayer TaxPilot gratuitement ?
+                            </h3>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="hidden mt-4">
+                            <p class="text-gray-600" data-translate="faqs.q6.answer">
+                                Oui, créez votre compte gratuitement et testez notre questionnaire intelligent. Vous ne payez qu'au moment de télécharger votre déclaration finale.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-12">
+                    <p class="text-gray-600 mb-4" data-translate="faqs.contact">
+                        Vous avez d'autres questions ?
+                    </p>
+                    <a href="mailto:support@taxpilot.ch" class="bg-swiss-red hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        Contactez notre équipe
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
         <div class="container mx-auto px-4">
@@ -889,6 +1198,7 @@
 
     <!-- JavaScript -->
     <script src="app.js"></script>
+    <script src="js/auth-landing.js"></script>
     
     <!-- Analytics Placeholder -->
     <script>

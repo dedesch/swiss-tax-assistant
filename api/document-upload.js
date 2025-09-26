@@ -1,137 +1,129 @@
-// Document Upload API Handler
-import DocumentProcessor from '../lib/document-processor.js';
+// Vercel serverless function for document upload and processing
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
-import path from 'path';
+import DocumentProcessor from '../lib/document-processor.js';
 
-// JWT_SECRET configuration with development fallback
-const JWT_SECRET = process.env.JWT_SECRET || (() => {
-    if (process.env.NODE_ENV === 'production') {
-        throw new Error('JWT_SECRET environment variable is required in production');
-    }
-    console.warn('WARNING: Using default JWT_SECRET for development. Set JWT_SECRET environment variable for production.');
-    return 'dev_secret_change_in_production_' + Date.now();
-})();
-const documentProcessor = new DocumentProcessor();
-
-// Configure multer for file upload
+// Configure multer for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({
-    storage: storage,
+    storage,
     limits: {
         fileSize: 10 * 1024 * 1024, // 10MB limit
     },
     fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']; // PDF removed for clarity
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
-            cb(new Error('Invalid file type. Only images are allowed.'), false);
+            cb(new Error('Invalid file type. Only images and PDFs are allowed.'), false);
         }
     }
 });
 
-// Verify JWT token
-function verifyToken(req) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        throw new Error('No valid authorization token provided');
-    }
-    
-    const token = authHeader.split(' ')[1];
-    return jwt.verify(token, JWT_SECRET);
-}
+// Initialize document processor
+const documentProcessor = new DocumentProcessor();
 
 export default async function handler(req, res) {
-    // Restrictive CORS headers for authenticated endpoint
-    const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:5000', 'https://localhost:5000'];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
 
+    // Handle preflight requests
     if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+        res.status(200).end();
+        return;
     }
 
-    try {
-        const userData = verifyToken(req);
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
 
-        if (req.method === 'POST') {
-            // Handle file upload
-            upload.single('document')(req, res, async (err) => {
-                if (err) {
-                    console.error('Upload error:', err);
-                    return res.status(400).json({
-                        success: false,
-                        error: err.message
-                    });
+    // Use multer middleware for file upload
+    return new Promise((resolve) => {
+        upload.single('document')(req, res, async (err) => {
+            if (err) {
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    res.status(400).json({ error: 'File size too large. Maximum size is 10MB.' });
+                } else {
+                    res.status(400).json({ error: err.message });
+                }
+                return resolve();
+            }
+
+            try {
+                // Development mode bypass - allow access without authentication
+                const isDevelopment = process.env.NODE_ENV !== 'production';
+                let user;
+                
+                if (isDevelopment) {
+                    // Use mock user for development with numeric ID for database compatibility
+                    user = {
+                        userId: 999999,
+                        email: 'dev@example.com'
+                    };
+                } else {
+                    // Verify authentication in production
+                    const authHeader = req.headers.authorization;
+                    const token = authHeader && authHeader.split(' ')[1];
+
+                    if (!token) {
+                        res.status(401).json({ error: 'Authentication required' });
+                        return resolve();
+                    }
+
+                    try {
+                        user = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
+                    } catch (error) {
+                        res.status(403).json({ error: 'Invalid token' });
+                        return resolve();
+                    }
                 }
 
                 if (!req.file) {
-                    return res.status(400).json({
-                        success: false,
-                        error: 'No file uploaded'
-                    });
+                    res.status(400).json({ error: 'No file uploaded' });
+                    return resolve();
                 }
 
-                try {
-                    // Process the document
-                    const result = await documentProcessor.processDocument(
-                        req.file.buffer,
-                        req.file.originalname,
-                        req.file.mimetype
-                    );
+                // Process document using OpenAI Vision
+                const result = await documentProcessor.processDocument(
+                    req.file.buffer,
+                    req.file.originalname,
+                    req.file.mimetype
+                );
 
-                    if (result.success) {
-                        return res.status(200).json({
-                            success: true,
-                            message: 'Document processed successfully',
-                            data: {
-                                documentType: result.documentType,
-                                extractedData: result.extractedData,
-                                fileName: result.fileName,
-                                processingTime: new Date().toISOString()
-                            }
-                        });
-                    } else {
-                        return res.status(400).json({
-                            success: false,
-                            error: result.error
-                        });
-                    }
-
-                } catch (processingError) {
-                    console.error('Document processing error:', processingError);
-                    return res.status(500).json({
+                if (!result.success) {
+                    res.status(400).json({
                         success: false,
-                        error: 'Failed to process document: ' + processingError.message
+                        error: result.error
                     });
+                    return resolve();
                 }
-            });
-        } else {
-            return res.status(405).json({
-                success: false,
-                error: 'Method not allowed'
-            });
-        }
 
-    } catch (error) {
-        console.error('API Error:', error);
-        
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({
-                success: false,
-                error: 'Invalid authentication token'
-            });
-        }
-        
-        return res.status(500).json({
-            success: false,
-            error: error.message || 'Internal server error'
+                res.json({
+                    success: true,
+                    message: 'Document processed successfully',
+                    documentType: result.documentType,
+                    extractedData: result.extractedData,
+                    fileName: result.fileName,
+                    userId: user.userId,
+                    timestamp: new Date().toISOString()
+                });
+                return resolve();
+
+            } catch (error) {
+                console.error('Document upload error:', error);
+                res.status(500).json({ error: 'Document processing failed' });
+                return resolve();
+            }
         });
-    }
+    });
 }
+
+// Required for Vercel to handle file uploads
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};

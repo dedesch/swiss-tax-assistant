@@ -4,10 +4,7 @@ import { fileURLToPath } from 'url';
 import cors from 'cors';
 
 // Import API handlers
-import calculationsHandler from './api/calculations.js';
-import userDataHandler from './api/user-data.js';
-import pdfReportHandler from './api/pdf-report.js';
-import documentUploadHandler from './api/document-upload.js';
+import { calculationsHandler, userDataHandler, pdfReportHandler, documentUploadHandler } from './api-handlers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,9 +18,9 @@ if (!process.env.JWT_SECRET) {
     console.error('This is required for secure authentication. Application may not function properly.');
 }
 
-// Configure CORS more restrictively for production
+// Configure CORS for Replit deployment
 const corsOptions = {
-    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:5000', 'https://localhost:5000'],
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']

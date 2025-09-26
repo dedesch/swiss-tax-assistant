@@ -5,6 +5,17 @@ const translations = {
         'meta.title': 'Votre déclaration d\'impôts en Suisse, en quelques minutes - TaxPilot',
         'meta.description': 'Assistant IA pour votre déclaration fiscale suisse. Guidage adapté à votre canton, vérifications pour éviter les erreurs coûteuses. Économisez jusqu\'à 75% vs experts.',
         
+        // Navigation
+        'nav.home': 'Accueil',
+        'nav.problem': 'Problème',
+        'nav.solution': 'Solution',
+        'nav.features': 'Fonctionnalités',
+        'nav.faqs': 'FAQ',
+        
+        // Authentication
+        'auth.login': 'Se connecter',
+        'auth.register': 'S\'inscrire',
+        
         // Hero
         'hero.headline': 'Votre déclaration d\'impôts en Suisse, en quelques minutes',
         'hero.subheadline': 'Guidage assisté par IA adapté à votre canton, avec vérifications pour éviter les erreurs coûteuses.',
@@ -29,6 +40,20 @@ const translations = {
         
         // Press
         'press.title': 'Vu dans',
+        
+        // Problem Section
+        'problem.title': 'Les défis de la déclaration fiscale suisse',
+        'problem.subtitle': 'Chaque année, des milliers de contribuables font des erreurs coûteuses',
+        'problem.complexity.title': 'Complexité excessive',
+        'problem.complexity.description': 'Chaque canton a ses propres règles, formulaires et taux. Difficile de s\'y retrouver.',
+        'problem.errors.title': 'Erreurs coûteuses',
+        'problem.errors.description': 'Déductions manquées, calculs incorrects. En moyenne, les erreurs coûtent 800 CHF par an.',
+        'problem.time.title': 'Perte de temps',
+        'problem.time.description': 'En moyenne 12 heures par an, stress et frustration inclus.',
+        'problem.stats.title': 'Les chiffres parlent d\'eux-mêmes',
+        'problem.stats.deductions': 'Oublient des déductions importantes',
+        'problem.stats.cost': 'Coût moyen des erreurs par an',
+        'problem.stats.time': 'Temps moyen passé sur la déclaration',
         
         // How it works
         'how.title': 'Comment ça marche',
@@ -130,6 +155,23 @@ const translations = {
         // FAQ
         'faq.title': 'Questions fréquentes',
         'faq.subtitle': 'Tout ce que vous devez savoir sur TaxPilot',
+        
+        // FAQs Section (new comprehensive FAQ)
+        'faqs.title': 'Questions fréquentes',
+        'faqs.subtitle': 'Tout ce que vous devez savoir sur TaxPilot',
+        'faqs.q1.question': 'TaxPilot est-il compatible avec tous les cantons suisses ?',
+        'faqs.q1.answer': 'Oui, TaxPilot prend en charge tous les 26 cantons suisses. Notre système s\'adapte automatiquement aux spécificités fiscales de votre canton de résidence.',
+        'faqs.q2.question': 'Mes données personnelles sont-elles sécurisées ?',
+        'faqs.q2.answer': 'Absolument. Nous utilisons un chiffrement de niveau bancaire (AES-256) et nos serveurs sont situés en Suisse. Vos données ne sont jamais partagées avec des tiers.',
+        'faqs.q3.question': 'Puis-je modifier ma déclaration après génération ?',
+        'faqs.q3.answer': 'Oui, vous pouvez modifier vos informations à tout moment. Une nouvelle déclaration sera automatiquement générée avec vos modifications.',
+        'faqs.q4.question': 'Que se passe-t-il si j\'ai des questions spécifiques ?',
+        'faqs.q4.answer': 'Notre équipe support est disponible par chat et email. Pour les cas complexes, nous proposons également une révision par un expert fiscal certifié.',
+        'faqs.q5.question': 'Combien coûte TaxPilot ?',
+        'faqs.q5.answer': 'Nous proposons plusieurs formules : Starter (39 CHF), Plus (79 CHF) et Pro (149 CHF). Toutes incluent une garantie satisfait ou remboursé de 30 jours.',
+        'faqs.q6.question': 'Puis-je essayer TaxPilot gratuitement ?',
+        'faqs.q6.answer': 'Oui, créez votre compte gratuitement et testez notre questionnaire intelligent. Vous ne payez qu\'au moment de télécharger votre déclaration finale.',
+        'faqs.contact': 'Vous avez d\'autres questions ?',
         'faq.0.question': 'Est-ce valide pour mon canton?',
         'faq.0.answer': 'Oui, TaxPilot fonctionne pour tous les 26 cantons suisses. Notre système adapte automatiquement les questions et calculs selon les spécificités de votre canton.',
         'faq.1.question': 'Puis-je importer les données de l\'année dernière?',
@@ -177,6 +219,17 @@ const translations = {
         'meta.title': 'Your Swiss Tax Declaration—Done Right in Minutes - TaxPilot',
         'meta.description': 'AI-assisted guidance tailored to your canton, with checks to avoid costly mistakes. Save up to 75% vs tax experts.',
         
+        // Navigation
+        'nav.home': 'Home',
+        'nav.problem': 'Problem',
+        'nav.solution': 'Solution',
+        'nav.features': 'Features',
+        'nav.faqs': 'FAQ',
+        
+        // Authentication
+        'auth.login': 'Login',
+        'auth.register': 'Sign Up',
+        
         // Hero
         'hero.headline': 'Your Swiss Tax Declaration—Done Right in Minutes',
         'hero.subheadline': 'AI-assisted guidance tailored to your canton, with checks to avoid costly mistakes.',
@@ -201,6 +254,20 @@ const translations = {
         
         // Press
         'press.title': 'As seen in',
+        
+        // Problem Section
+        'problem.title': 'Swiss Tax Declaration Challenges',
+        'problem.subtitle': 'Every year, thousands of taxpayers make costly mistakes',
+        'problem.complexity.title': 'Excessive complexity',
+        'problem.complexity.description': 'Each canton has its own rules, forms and rates. Hard to navigate.',
+        'problem.errors.title': 'Costly errors',
+        'problem.errors.description': 'Missed deductions, incorrect calculations. On average, errors cost CHF 850 per year.',
+        'problem.time.title': 'Time waste',
+        'problem.time.description': 'Average of 12 hours per year, stress and frustration included.',
+        'problem.stats.title': 'The numbers speak for themselves',
+        'problem.stats.deductions': 'Forget important deductions',
+        'problem.stats.cost': 'Average cost of errors per year',
+        'problem.stats.time': 'Average time spent on declaration',
         
         // How it works
         'how.title': 'How it works',
@@ -302,6 +369,23 @@ const translations = {
         // FAQ
         'faq.title': 'Frequently asked questions',
         'faq.subtitle': 'Everything you need to know about TaxPilot',
+        
+        // FAQs Section (new comprehensive FAQ)
+        'faqs.title': 'Frequently asked questions',
+        'faqs.subtitle': 'Everything you need to know about TaxPilot',
+        'faqs.q1.question': 'Is TaxPilot compatible with all Swiss cantons?',
+        'faqs.q1.answer': 'Yes, TaxPilot supports all 26 Swiss cantons. Our system automatically adapts to the tax specificities of your canton of residence.',
+        'faqs.q2.question': 'Are my personal data secure?',
+        'faqs.q2.answer': 'Absolutely. We use bank-level encryption (AES-256) and our servers are located in Switzerland. Your data is never shared with third parties.',
+        'faqs.q3.question': 'Can I modify my declaration after generation?',
+        'faqs.q3.answer': 'Yes, you can modify your information at any time. A new declaration will be automatically generated with your changes.',
+        'faqs.q4.question': 'What happens if I have specific questions?',
+        'faqs.q4.answer': 'Our support team is available via chat and email. For complex cases, we also offer review by a certified tax expert.',
+        'faqs.q5.question': 'How much does TaxPilot cost?',
+        'faqs.q5.answer': 'We offer several plans: Starter (CHF 39), Plus (CHF 79) and Pro (CHF 149). All include a 30-day satisfaction or money-back guarantee.',
+        'faqs.q6.question': 'Can I try TaxPilot for free?',
+        'faqs.q6.answer': 'Yes, create your account for free and test our smart questionnaire. You only pay when downloading your final declaration.',
+        'faqs.contact': 'Have other questions?',
         'faq.0.question': 'Is it valid for my canton?',
         'faq.0.answer': 'Yes, TaxPilot works for all 26 Swiss cantons. Our system automatically adapts questions and calculations to your canton\'s specifics.',
         'faq.1.question': 'Can I import last year\'s data?',
@@ -349,6 +433,17 @@ const translations = {
         'meta.title': 'Ihre Schweizer Steuererklärung – in wenigen Minuten erledigt - TaxPilot',
         'meta.description': 'KI-gestützte Anleitung für Ihren Kanton mit Überprüfungen zur Vermeidung kostspieliger Fehler. Sparen Sie bis zu 75% vs. Steuerexperten.',
         
+        // Navigation
+        'nav.home': 'Startseite',
+        'nav.problem': 'Problem',
+        'nav.solution': 'Lösung',
+        'nav.features': 'Funktionen',
+        'nav.faqs': 'FAQ',
+        
+        // Authentication
+        'auth.login': 'Anmelden',
+        'auth.register': 'Registrieren',
+        
         // Hero
         'hero.headline': 'Ihre Schweizer Steuererklärung – in wenigen Minuten erledigt',
         'hero.subheadline': 'KI-gestützte Anleitung für Ihren Kanton mit Überprüfungen zur Vermeidung kostspieliger Fehler.',
@@ -373,6 +468,20 @@ const translations = {
         
         // Press
         'press.title': 'Zu sehen in',
+        
+        // Problem Section
+        'problem.title': 'Herausforderungen der Schweizer Steuererklärung',
+        'problem.subtitle': 'Jedes Jahr machen Tausende von Steuerzahlern kostspielige Fehler',
+        'problem.complexity.title': 'Übermäßige Komplexität',
+        'problem.complexity.description': 'Jeder Kanton hat seine eigenen Regeln, Formulare und Sätze. Schwer zu navigieren.',
+        'problem.errors.title': 'Kostspielige Fehler',
+        'problem.errors.description': 'Verpasste Abzüge, falsche Berechnungen. Im Durchschnitt kosten Fehler CHF 850 pro Jahr.',
+        'problem.time.title': 'Zeitverschwendung',
+        'problem.time.description': 'Durchschnittlich 12 Stunden pro Jahr, Stress und Frustration inbegriffen.',
+        'problem.stats.title': 'Die Zahlen sprechen für sich',
+        'problem.stats.deductions': 'Vergessen wichtige Abzüge',
+        'problem.stats.cost': 'Durchschnittliche Kosten der Fehler pro Jahr',
+        'problem.stats.time': 'Durchschnittliche Zeit für die Erklärung',
         
         // How it works
         'how.title': 'So funktioniert\'s',
@@ -474,6 +583,23 @@ const translations = {
         // FAQ
         'faq.title': 'Häufig gestellte Fragen',
         'faq.subtitle': 'Alles, was Sie über TaxPilot wissen müssen',
+        
+        // FAQs Section (new comprehensive FAQ)
+        'faqs.title': 'Häufig gestellte Fragen',
+        'faqs.subtitle': 'Alles, was Sie über TaxPilot wissen müssen',
+        'faqs.q1.question': 'Ist TaxPilot mit allen Schweizer Kantonen kompatibel?',
+        'faqs.q1.answer': 'Ja, TaxPilot unterstützt alle 26 Schweizer Kantone. Unser System passt sich automatisch an die steuerlichen Besonderheiten Ihres Wohnkantons an.',
+        'faqs.q2.question': 'Sind meine persönlichen Daten sicher?',
+        'faqs.q2.answer': 'Absolut. Wir verwenden Verschlüsselung auf Bankniveau (AES-256) und unsere Server befinden sich in der Schweiz. Ihre Daten werden niemals an Dritte weitergegeben.',
+        'faqs.q3.question': 'Kann ich meine Erklärung nach der Generierung ändern?',
+        'faqs.q3.answer': 'Ja, Sie können Ihre Informationen jederzeit ändern. Eine neue Erklärung wird automatisch mit Ihren Änderungen generiert.',
+        'faqs.q4.question': 'Was passiert, wenn ich spezifische Fragen habe?',
+        'faqs.q4.answer': 'Unser Support-Team ist per Chat und E-Mail verfügbar. Für komplexe Fälle bieten wir auch eine Überprüfung durch einen zertifizierten Steuerexperten.',
+        'faqs.q5.question': 'Wie viel kostet TaxPilot?',
+        'faqs.q5.answer': 'Wir bieten mehrere Pläne: Starter (CHF 39), Plus (CHF 79) und Pro (CHF 149). Alle beinhalten eine 30-tägige Zufriedenheits- oder Geld-zurück-Garantie.',
+        'faqs.q6.question': 'Kann ich TaxPilot kostenlos ausprobieren?',
+        'faqs.q6.answer': 'Ja, erstellen Sie Ihr Konto kostenlos und testen Sie unseren intelligenten Fragebogen. Sie zahlen erst beim Download Ihrer finalen Erklärung.',
+        'faqs.contact': 'Haben Sie weitere Fragen?',
         'faq.0.question': 'Ist es für meinen Kanton gültig?',
         'faq.0.answer': 'Ja, TaxPilot funktioniert für alle 26 Schweizer Kantone. Unser System passt Fragen und Berechnungen automatisch an die Besonderheiten Ihres Kantons an.',
         'faq.1.question': 'Kann ich die Daten vom letzten Jahr importieren?',
@@ -521,6 +647,17 @@ const translations = {
         'meta.title': 'La tua dichiarazione fiscale svizzera, in pochi minuti - TaxPilot',
         'meta.description': 'Guida assistita da IA adattata al tuo cantone, con controlli per evitare errori costosi. Risparmia fino al 75% vs esperti fiscali.',
         
+        // Navigation
+        'nav.home': 'Home',
+        'nav.problem': 'Problema',
+        'nav.solution': 'Soluzione',
+        'nav.features': 'Caratteristiche',
+        'nav.faqs': 'FAQ',
+        
+        // Authentication
+        'auth.login': 'Accedi',
+        'auth.register': 'Registrati',
+        
         // Hero
         'hero.headline': 'La tua dichiarazione fiscale svizzera, in pochi minuti',
         'hero.subheadline': 'Guida assistita da IA adattata al tuo cantone, con controlli per evitare errori costosi.',
@@ -545,6 +682,20 @@ const translations = {
         
         // Press
         'press.title': 'Visto su',
+        
+        // Problem Section
+        'problem.title': 'Sfide della dichiarazione fiscale svizzera',
+        'problem.subtitle': 'Ogni anno, migliaia di contribuenti commettono errori costosi',
+        'problem.complexity.title': 'Complessità eccessiva',
+        'problem.complexity.description': 'Ogni cantone ha le sue regole, moduli e tariffe. Difficile da navigare.',
+        'problem.errors.title': 'Errori costosi',
+        'problem.errors.description': 'Deduzioni mancate, calcoli errati. In media, gli errori costano CHF 850 all\'anno.',
+        'problem.time.title': 'Perdita di tempo',
+        'problem.time.description': 'In media 12 ore all\'anno, stress e frustrazione inclusi.',
+        'problem.stats.title': 'I numeri parlano da soli',
+        'problem.stats.deductions': 'Dimenticano deduzioni importanti',
+        'problem.stats.cost': 'Costo medio degli errori per anno',
+        'problem.stats.time': 'Tempo medio speso sulla dichiarazione',
         
         // How it works
         'how.title': 'Come funziona',
@@ -646,6 +797,23 @@ const translations = {
         // FAQ
         'faq.title': 'Domande frequenti',
         'faq.subtitle': 'Tutto quello che devi sapere su TaxPilot',
+        
+        // FAQs Section (new comprehensive FAQ)
+        'faqs.title': 'Domande frequenti',
+        'faqs.subtitle': 'Tutto quello che devi sapere su TaxPilot',
+        'faqs.q1.question': 'TaxPilot è compatibile con tutti i cantoni svizzeri?',
+        'faqs.q1.answer': 'Sì, TaxPilot supporta tutti i 26 cantoni svizzeri. Il nostro sistema si adatta automaticamente alle specificità fiscali del tuo cantone di residenza.',
+        'faqs.q2.question': 'I miei dati personali sono sicuri?',
+        'faqs.q2.answer': 'Assolutamente. Utilizziamo crittografia di livello bancario (AES-256) e i nostri server sono situati in Svizzera. I tuoi dati non sono mai condivisi con terze parti.',
+        'faqs.q3.question': 'Posso modificare la mia dichiarazione dopo la generazione?',
+        'faqs.q3.answer': 'Sì, puoi modificare le tue informazioni in qualsiasi momento. Una nuova dichiarazione sarà automaticamente generata con le tue modifiche.',
+        'faqs.q4.question': 'Cosa succede se ho domande specifiche?',
+        'faqs.q4.answer': 'Il nostro team di supporto è disponibile via chat ed email. Per casi complessi, offriamo anche la revisione da parte di un esperto fiscale certificato.',
+        'faqs.q5.question': 'Quanto costa TaxPilot?',
+        'faqs.q5.answer': 'Offriamo diversi piani: Starter (CHF 39), Plus (CHF 79) e Pro (CHF 149). Tutti includono una garanzia di soddisfazione o rimborso di 30 giorni.',
+        'faqs.q6.question': 'Posso provare TaxPilot gratuitamente?',
+        'faqs.q6.answer': 'Sì, crea il tuo account gratuitamente e testa il nostro questionario intelligente. Paghi solo quando scarichi la tua dichiarazione finale.',
+        'faqs.contact': 'Hai altre domande?',
         'faq.0.question': 'È valido per il mio cantone?',
         'faq.0.answer': 'Sì, TaxPilot funziona per tutti i 26 cantoni svizzeri. Il nostro sistema adatta automaticamente domande e calcoli alle specificità del tuo cantone.',
         'faq.1.question': 'Posso importare i dati dell\'anno scorso?',
@@ -961,6 +1129,9 @@ function trackCTA(action, plan = null) {
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if in development mode and show notice
+    checkDevelopmentMode();
+    
     // Load saved language preference
     const savedLanguage = localStorage.getItem('preferredLanguage') || 'fr';
     switchLanguage(savedLanguage);
@@ -1047,7 +1218,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (ctaPrimary) {
         ctaPrimary.addEventListener('click', () => {
             trackCTA('Primary CTA');
-            window.location.href = '/app';
+            showLoginSignup();
         });
     }
     
@@ -1110,6 +1281,31 @@ function selectPlan(planName, price) {
     // 3. Handle success/cancel redirects
     
     alert(`You selected the ${planName} plan. Stripe checkout would open here.`);
+}
+
+// Development mode detection
+async function checkDevelopmentMode() {
+    try {
+        // Test API without authentication to see if development mode is active
+        const response = await fetch('/api/calculations', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data: { bankAccountsCHF: 1000 } })
+        });
+        
+        // If we get a successful response without auth, we're in development mode
+        if (response.ok) {
+            const devNotice = document.getElementById('dev-notice');
+            if (devNotice) {
+                devNotice.classList.remove('hidden');
+            }
+        }
+    } catch (error) {
+        // Silent fail - if endpoint doesn't exist or errors, assume production
+        console.log('Development mode check failed, assuming production');
+    }
 }
 
 // Export functions for inline event handlers

@@ -160,11 +160,8 @@ function updateDividendMarker(element) {
 
 // Properties Functions
 function addProperty() {
-    if (typeof window.addProperty === 'function') {
-        window.addProperty();
-    } else {
-        addPropertyFallback();
-    }
+    // Always use the fallback implementation to avoid infinite recursion
+    addPropertyFallback();
 }
 
 function addPropertyFallback() {

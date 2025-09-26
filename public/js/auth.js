@@ -14,75 +14,83 @@ class AuthManager {
         const logoutBtn = document.getElementById('logoutBtn');
 
         if (api.isAuthenticated() && userEmail) {
-            userInfo.textContent = `Logged in as: ${userEmail}`;
-            userInfo.style.display = 'inline';
-            loginBtn.style.display = 'none';
-            registerBtn.style.display = 'none';
-            logoutBtn.style.display = 'inline';
+            if (userInfo) {
+                userInfo.textContent = `Logged in as: ${userEmail}`;
+                userInfo.style.display = 'inline';
+            }
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (registerBtn) registerBtn.style.display = 'none';
+            if (logoutBtn) logoutBtn.style.display = 'inline';
         } else {
-            userInfo.style.display = 'none';
-            loginBtn.style.display = 'inline';
-            registerBtn.style.display = 'inline';
-            logoutBtn.style.display = 'none';
+            if (userInfo) userInfo.style.display = 'none';
+            if (loginBtn) loginBtn.style.display = 'inline';
+            if (registerBtn) registerBtn.style.display = 'inline';
+            if (logoutBtn) logoutBtn.style.display = 'none';
         }
     }
 
     // Setup form event listeners
     setupEventListeners() {
-        // Login form
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
+        // Login form - only bind if element exists
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
 
-            const result = await api.login(email, password);
-            if (result.success) {
-                showNotification('Login successful!', 'success');
-                closeModal('loginModal');
-                document.getElementById('loginForm').reset();
-                this.updateAuthUI();
-                
-                // Redirect to tax declaration app after successful login
-                setTimeout(() => {
-                    window.location.href = '/app';
-                }, 1500);
-            } else {
-                showNotification(result.error || 'Login failed', 'error');
-            }
-        });
+                const result = await api.login(email, password);
+                if (result.success) {
+                    showNotification('Login successful!', 'success');
+                    closeModal('loginModal');
+                    document.getElementById('loginForm').reset();
+                    this.updateAuthUI();
+                    
+                    // Redirect to tax declaration app after successful login
+                    setTimeout(() => {
+                        window.location.href = '/app';
+                    }, 1500);
+                } else {
+                    showNotification(result.error || 'Login failed', 'error');
+                }
+            });
+        }
 
-        // Register form
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+        // Register form - only bind if element exists
+        const registerForm = document.getElementById('registerForm');
+        if (registerForm) {
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
 
-            if (password !== confirmPassword) {
-                showNotification('Passwords do not match', 'error');
-                return;
-            }
+                if (password !== confirmPassword) {
+                    showNotification('Passwords do not match', 'error');
+                    return;
+                }
 
-            if (password.length < 6) {
-                showNotification('Password must be at least 6 characters', 'error');
-                return;
-            }
+                if (password.length < 6) {
+                    showNotification('Password must be at least 6 characters', 'error');
+                    return;
+                }
 
-            const result = await api.register(email, password);
-            if (result.success) {
-                showNotification('Registration successful!', 'success');
-                closeModal('registerModal');
-                document.getElementById('registerForm').reset();
-                this.updateAuthUI();
-                
-                // Redirect to tax declaration app after successful registration
-                setTimeout(() => {
-                    window.location.href = '/app';
-                }, 1500);
-            } else {
-                showNotification(result.error || 'Registration failed', 'error');
-            }
-        });
+                const result = await api.register(email, password);
+                if (result.success) {
+                    showNotification('Registration successful!', 'success');
+                    closeModal('registerModal');
+                    document.getElementById('registerForm').reset();
+                    this.updateAuthUI();
+                    
+                    // Redirect to tax declaration app after successful registration
+                    setTimeout(() => {
+                        window.location.href = '/app';
+                    }, 1500);
+                } else {
+                    showNotification(result.error || 'Registration failed', 'error');
+                }
+            });
+        }
     }
 
     // Handle logout
